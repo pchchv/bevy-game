@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Component)]
-struct Player;
+mod player;
 
 fn main() {
     App::new()
