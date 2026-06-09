@@ -4,10 +4,11 @@ use bevy::prelude::*;
 struct Player;
 
 fn main() {
-	App::new()
-	.add_plugins(DefaultPlugins)
-	.add_systems(Startup, setup)
-	.run();
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .add_systems(Startup, setup)
+        .add_systems(Update, move_player) 
+        .run();
 }
 
 fn setup(mut commands: Commands) {
