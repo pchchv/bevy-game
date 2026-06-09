@@ -13,5 +13,15 @@ enum Facing {
     Right,
 }
 
+#[derive(Component, Deref, DerefMut)]
+struct AnimationTimer(Timer);
+
+#[derive(Component)]
+struct AnimationState {
+    facing: Facing,
+    moving: bool,
+    was_moving: bool,
+}
+
 #[derive(Component)]
 struct Player;
