@@ -1,10 +1,11 @@
 use bevy::prelude::*;
+use crate::player::PlayerPlugin;
 
 mod player;
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::from(bevy::color::palettes::basic::WHITE)))
+        .insert_resource(ClearColor(Color::WHITE))
         .add_plugins(
             DefaultPlugins.set(AssetPlugin {
                 file_path: "src/assets".into(),
@@ -12,6 +13,7 @@ fn main() {
             }),
         )
         .add_systems(Startup, setup_camera)
+        .add_plugins(PlayerPlugin) // Update this line
         .run();
 }
 
