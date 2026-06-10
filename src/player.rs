@@ -98,3 +98,21 @@ fn move_player(
         anim.moving = false;
     }
 }
+
+fn row_zero_based(facing: Facing) -> usize {
+    match facing {
+        Facing::Up => 8,
+        Facing::Left => 9,
+        Facing::Down => 10,
+        Facing::Right => 11,
+    }
+}
+
+// Returns the starting atlas index for the given facing row
+fn row_start_index(facing: Facing) -> usize {
+    row_zero_based(facing) * WALK_FRAMES
+}
+
+fn atlas_index_for(facing: Facing, frame_in_row: usize) -> usize {
+    row_start_index(facing) + frame_in_row.min(WALK_FRAMES - 1)
+}
