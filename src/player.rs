@@ -58,3 +58,43 @@ fn spawn_player(
         AnimationTimer(Timer::from_seconds(ANIM_DT, TimerMode::Repeating)),
     ));
 }
+
+fn move_player(
+    input: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
+    mut player: Query<(&mut Transform, &mut AnimationState), With<Player>>,
+) {
+    let Ok((mut transform, mut anim)) = player.single_mut() else {
+        return;
+    };
+
+    let mut direction = Vec2::ZERO;
+    if input.pressed(KeyCode::ArrowLeft) {
+        direction.x -= 1.0;
+    }
+    if input.pressed(KeyCode::ArrowRight) {
+        direction.x += 1.0;
+    }
+    if input.pressed(KeyCode::ArrowUp) {
+        direction.y += 1.0;
+    }
+    if input.pressed(KeyCode::ArrowDown) {
+        direction.y -= 1.0;
+    }
+
+    if direction != Vec2::ZERO {
+        let delta = direction.normalize() * MOVE_SPEED * time.delta_secs();
+        transform.translation.x += delta.x;
+        transform.translation.y += delta.y;
+        anim.moving = true;
+
+        // Update facing based on dominant direction
+        if direction.x.abs() > direction.y.abs() {
+            anim.facing = if direction.x > 0.0 { Facing::Right } else { Facing::Left };
+        } else {
+            anim.facing = if direction.y > 0.0 { Facing::Up } else { Facing::Down };
+        }
+    } else {
+        anim.moving = false;
+    }
+}
