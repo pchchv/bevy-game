@@ -6,7 +6,7 @@ const MOVE_SPEED: f32 = 140.0; // pixels per second
 const ANIM_DT: f32 = 0.1; // seconds per frame (~10 FPS)
 
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
-enum Facing {
+pub enum Facing {
     Up,
     Left,
     Down,
@@ -14,19 +14,18 @@ enum Facing {
 }
 
 #[derive(Component, Deref, DerefMut)]
-struct AnimationTimer(Timer);
+pub struct AnimationTimer(pub Timer);
 
 #[derive(Component)]
-struct AnimationState {
-    facing: Facing,
-    moving: bool,
-    was_moving: bool,
+pub struct AnimationState {
+    pub facing: Facing,
+    pub moving: bool,
 }
 
 #[derive(Component)]
-struct Player;
+pub struct Player;
 
-fn spawn_player(
+pub fn spawn_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
@@ -44,22 +43,24 @@ fn spawn_player(
     // Start facing down (towards user), idle on first frame of that row
     let facing = Facing::Down;
     let start_index = atlas_index_for(facing, 0);
+
     commands.spawn((
-        Sprite::from_atlas_image(
-            texture,
-            TextureAtlas {
+        Sprite {
+            image: texture,
+            texture_atlas: Some(TextureAtlas {
                 layout,
                 index: start_index,
-            },
-        ),
+            }),
+            ..default()
+        },
         Transform::from_translation(Vec3::ZERO),
         Player,
-        AnimationState { facing, moving: false, was_moving: false },
+        AnimationState { facing, moving: false },
         AnimationTimer(Timer::from_seconds(ANIM_DT, TimerMode::Repeating)),
     ));
 }
 
-fn move_player(
+pub fn move_player(
     input: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
     mut player: Query<(&mut Transform, &mut AnimationState), With<Player>>,
@@ -117,7 +118,7 @@ fn atlas_index_for(facing: Facing, frame_in_row: usize) -> usize {
     row_start_index(facing) + frame_in_row.min(WALK_FRAMES - 1)
 }
 
-fn animate_player(
+pub fn animate_player(
     time: Res<Time>,
     mut query: Query<(&mut AnimationState, &mut AnimationTimer, &mut Sprite), With<Player>>,
 ) {
@@ -130,32 +131,30 @@ fn animate_player(
         None => return,
     };
 
-    // Compute the target row and current position in the atlas (column/row within the 9-column row)
+    // Compute the target row and current position in the atlas
     let target_row = row_zero_based(anim.facing);
     let mut current_col = atlas.index % WALK_FRAMES;
-    let mut current_row = atlas.index / WALK_FRAMES;
+    let current_row = atlas.index / WALK_FRAMES;
 
-    // If the facing changed (or we weren't on a walking row), snap to the first frame of the target row
-    if current_row != target_row {
+    // If the facing changed, snap to the first frame of the target row
+    if anim.is_changed() || current_row != target_row {
         atlas.index = row_start_index(anim.facing);
         current_col = 0;
-        current_row = target_row;
         timer.reset();
     }
 
-    let just_started = anim.moving && !anim.was_moving;
-    let just_stopped = !anim.moving && anim.was_moving;
+    let just_started = anim.moving && anim.is_changed();
+    let just_stopped = !anim.moving && anim.is_changed();
 
     if anim.moving {
         if just_started {
-            // On tap or movement start, immediately advance one frame for visible feedback
+            // Immediately advance one frame for instant responsiveness
             let row_start = row_start_index(anim.facing);
             let next_col = (current_col + 1) % WALK_FRAMES;
             atlas.index = row_start + next_col;
-            // Restart the timer so the next advance uses a full interval
             timer.reset();
         } else {
-            // Continuous movement: advance based on timer cadence
+            // Continuous animation pacing
             timer.tick(time.delta());
             if timer.just_finished() {
                 let row_start = row_start_index(anim.facing);
@@ -164,10 +163,6 @@ fn animate_player(
             }
         }
     } else if just_stopped {
-        // Not moving: keep current frame to avoid snap. Reset timer on transition to idle.
         timer.reset();
     }
-
-    // Update previous movement state
-    anim.was_moving = anim.moving;
 }
