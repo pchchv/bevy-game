@@ -122,7 +122,7 @@ pub fn animate_player(
     time: Res<Time>,
     mut query: Query<(&mut AnimationState, &mut AnimationTimer, &mut Sprite), With<Player>>,
 ) {
-    let Ok((mut anim, mut timer, mut sprite)) = query.single_mut() else {
+    let Ok((anim, mut timer, mut sprite)) = query.single_mut() else {
         return;
     };
 
