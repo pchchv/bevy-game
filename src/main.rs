@@ -4,7 +4,7 @@ mod player;
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::WHITE)) // We have updated the bg color to white
+        .insert_resource(ClearColor(Color::from(bevy::color::palettes::basic::WHITE)))
         .add_plugins(
             DefaultPlugins.set(AssetPlugin {
                 file_path: "src/assets".into(),
