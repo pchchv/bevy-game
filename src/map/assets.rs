@@ -12,3 +12,10 @@ pub struct SpawnableAsset {
     /// Function to add custom components (like collision, physics, etc.)
     components_spawner: fn(&mut EntityCommands),
 }
+
+impl SpawnableAsset {
+    pub fn with_grid_offset(mut self, offset: GridDelta) -> Self {
+        self.grid_offset = offset;
+        self
+    }
+}
