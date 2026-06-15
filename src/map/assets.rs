@@ -14,6 +14,15 @@ pub struct SpawnableAsset {
 }
 
 impl SpawnableAsset {
+    pub fn new(sprite_name: &'static str) -> Self {
+        Self {
+            sprite_name,
+            grid_offset: GridDelta::new(0, 0, 0),
+            offset: Vec3::ZERO,
+            components_spawner: |_| {}, // Default: no extra components
+        }
+    }
+
     pub fn with_grid_offset(mut self, offset: GridDelta) -> Self {
         self.grid_offset = offset;
         self
