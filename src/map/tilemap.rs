@@ -22,4 +22,14 @@ impl TilemapDefinition {
     pub const fn atlas_size(&self) -> UVec2 {
         UVec2::new(self.atlas_width, self.atlas_height)
     }
+
+    pub fn sprite_index(&self, name: &str) -> Option<usize> {
+        self.sprites.iter().position(|sprite| sprite.name == name)
+    }
+
+    pub fn sprite_rect(&self, index: usize) -> URect {
+        let sprite = &self.sprites[index];
+        let min = UVec2::new(sprite.pixel_x, sprite.pixel_y);
+        URect::from_corners(min, min + self.tile_size())
+    }
 }
