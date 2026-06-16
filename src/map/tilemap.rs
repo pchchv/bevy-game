@@ -1,5 +1,19 @@
 use bevy::math::{URect, UVec2};
 
+pub const TILEMAP: TilemapDefinition = TilemapDefinition {
+    tile_width: 32,
+    tile_height: 32,
+    atlas_width: 256,
+    atlas_height: 320,
+    sprites: &[
+          TilemapSprite {
+            name: "dirt",
+            pixel_x: 128,
+            pixel_y: 0,
+        },
+    ]
+};
+
 pub struct TilemapSprite {
     pub name: &'static str,
     pub pixel_x: u32,
