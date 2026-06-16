@@ -5,3 +5,11 @@ pub struct TilemapSprite {
     pub pixel_x: u32,
     pub pixel_y: u32,
 }
+
+pub struct TilemapDefinition {
+    pub tile_width: u32,
+    pub tile_height: u32,
+    pub atlas_width: u32,
+    pub atlas_height: u32,
+    pub sprites: &'static [TilemapSprite],
+}
