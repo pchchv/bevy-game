@@ -29,3 +29,18 @@ impl SpawnableAsset {
         self
     }
 }
+
+#[derive(Clone)]
+pub struct TilemapHandles {
+    pub image: Handle<Image>,
+    pub layout: Handle<TextureAtlasLayout>,
+}
+
+impl TilemapHandles {
+    pub fn sprite(&self, atlas_index: usize) -> Sprite {
+        Sprite::from_atlas_image(
+            self.image.clone(),
+            TextureAtlas::from(self.layout.clone()).with_index(atlas_index),
+        )
+    }
+}
