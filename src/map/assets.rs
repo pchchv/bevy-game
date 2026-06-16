@@ -60,3 +60,32 @@ pub fn prepare_tilemap_handles(
 
     TilemapHandles { image, layout }
 }
+
+pub fn load_assets(tilemap_handles: &TilemapHandles, assets_definitions: Vec<Vec<SpawnableAsset>>) -> ModelsAssets<Sprite> {
+    let mut models_assets = ModelsAssets::<Sprite>::new();
+    for (model_index, assets) in assets_definitions.into_iter().enumerate() {
+        for asset_def in assets {
+            let SpawnableAsset {
+                sprite_name,
+                grid_offset,
+                offset,
+                components_spawner,
+            } = asset_def;
+
+            let Some(atlas_index) = TILEMAP.sprite_index(sprite_name) else {
+                panic!("Unknown atlas sprite '{}'", sprite_name);
+            };
+
+            models_assets.add(
+                model_index,
+                ModelAsset {
+                    assets_bundle: tilemap_handles.sprite(atlas_index),
+                    grid_offset,
+                    world_offset: offset,
+                    spawn_commands: components_spawner,
+                },
+            )
+        }
+    }
+    models_assets
+}
