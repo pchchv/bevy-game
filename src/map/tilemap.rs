@@ -13,3 +13,13 @@ pub struct TilemapDefinition {
     pub atlas_height: u32,
     pub sprites: &'static [TilemapSprite],
 }
+
+impl TilemapDefinition {
+    pub const fn tile_size(&self) -> UVec2 {
+        UVec2::new(self.tile_width, self.tile_height)
+    }
+
+    pub const fn atlas_size(&self) -> UVec2 {
+        UVec2::new(self.atlas_width, self.atlas_height)
+    }
+}
