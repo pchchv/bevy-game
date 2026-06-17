@@ -6,3 +6,12 @@ pub struct TerrainModelBuilder {
     pub models: ModelCollection<Cartesian3D>,
     pub assets: Vec<Vec<SpawnableAsset>>,
 }
+
+impl TerrainModelBuilder {
+    pub fn new() -> Self {
+        Self {
+            models: ModelCollection::new(),
+            assets: Vec::new(),
+        }
+    }
+}
