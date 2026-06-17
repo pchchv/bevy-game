@@ -18,4 +18,13 @@ impl TerrainModelBuilder {
     pub fn into_parts(self) -> (Vec<Vec<SpawnableAsset>>, ModelCollection<Cartesian3D>) {
         (self.assets, self.models)
     }
+
+    pub fn create_model<T>(&mut self, template: T, assets: Vec<SpawnableAsset>) -> &mut Model<Cartesian3D>
+    where
+        T: Into<ModelTemplate<Cartesian3D>>,
+    {
+        let model_ref = self.models.create(template);
+        self.assets.push(assets);
+        model_ref
+    }
 }
