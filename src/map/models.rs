@@ -14,4 +14,8 @@ impl TerrainModelBuilder {
             assets: Vec::new(),
         }
     }
+
+    pub fn into_parts(self) -> (Vec<Vec<SpawnableAsset>>, ModelCollection<Cartesian3D>) {
+        (self.assets, self.models)
+    }
 }
