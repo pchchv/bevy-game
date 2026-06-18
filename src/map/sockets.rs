@@ -5,3 +5,7 @@ pub struct DirtLayerSockets {
     pub layer_down: Socket,     // What dirt can sit on
     pub material: Socket,       // What dirt connects to horizontally
 }
+
+pub struct TerrainSockets {
+    pub dirt: DirtLayerSockets,
+}
