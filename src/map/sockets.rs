@@ -9,3 +9,15 @@ pub struct DirtLayerSockets {
 pub struct TerrainSockets {
     pub dirt: DirtLayerSockets,
 }
+
+pub fn create_sockets(socket_collection: &mut SocketCollection) -> TerrainSockets {
+    let mut new_socket = || -> Socket { socket_collection.create() };
+    let sockets = TerrainSockets {
+        dirt: DirtLayerSockets {
+            layer_up: new_socket(),
+            material: new_socket(),
+            layer_down: new_socket(),
+        },
+    };
+    sockets
+}
