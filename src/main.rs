@@ -7,10 +7,12 @@ fn main() {
     App::new()
         .insert_resource(ClearColor(Color::WHITE))
         .add_plugins(
-            DefaultPlugins.set(AssetPlugin {
+            DefaultPlugins
+                .set(AssetPlugin {
                 file_path: "src/assets".into(),
                 ..default()
             }),
+                .set(ImagePlugin::default_nearest()),
         )
         .add_systems(Startup, setup_camera)
         .add_plugins(PlayerPlugin) // Update this line
