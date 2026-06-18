@@ -27,3 +27,16 @@ fn build_dirt_layer(
         vec![terrain_sockets.dirt.material],
     )]);
 }
+
+pub fn build_world() -> (Vec<Vec<SpawnableAsset>>, ModelCollection<Cartesian3D>, SocketCollection) {
+    let mut socket_collection = SocketCollection::new();
+    let terrain_sockets = create_sockets(&mut socket_collection);
+    let mut terrain_model_builder = TerrainModelBuilder::new();
+
+    // Build dirt layer
+    build_dirt_layer(&mut terrain_model_builder, &terrain_sockets, &mut socket_collection);
+
+    let (assets, models) = terrain_model_builder.into_parts();
+
+    (assets, models, socket_collection)
+}
