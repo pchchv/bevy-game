@@ -6,6 +6,15 @@ pub struct DirtLayerSockets {
     pub material: Socket,       // What dirt connects to horizontally
 }
 
+pub struct GrassLayerSockets {
+    pub layer_up: Socket,
+    pub layer_down: Socket,
+    pub material: Socket,
+    pub void_and_grass: Socket,
+    pub grass_and_void: Socket,
+    pub grass_fill_up: Socket,
+}
+
 pub struct TerrainSockets {
     pub dirt: DirtLayerSockets,
 }
