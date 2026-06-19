@@ -312,6 +312,9 @@ pub fn build_world() -> (Vec<Vec<SpawnableAsset>>, ModelCollection<Cartesian3D>,
     // Build grass layer
     build_grass_layer(&mut terrain_model_builder, &terrain_sockets, &mut socket_collection);
 
+    // Build yellow grass layer
+    build_yellow_grass_layer(&mut terrain_model_builder, &terrain_sockets, &mut socket_collection);
+
     let (assets, models) = terrain_model_builder.into_parts();
 
     (assets, models, socket_collection)
