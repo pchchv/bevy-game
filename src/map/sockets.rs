@@ -30,6 +30,14 @@ pub struct WaterLayerSockets {
     pub ground_up: Socket,
 }
 
+pub struct PropsLayerSockets {
+    pub layer_up: Socket,
+    pub layer_down: Socket,
+    pub props_down: Socket,
+    pub big_tree_1_base: Socket,
+    pub big_tree_2_base: Socket,
+}
+
 pub struct TerrainSockets {
     pub void: Socket,
     pub dirt: DirtLayerSockets,
