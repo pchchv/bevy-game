@@ -21,6 +21,15 @@ pub struct YellowGrassLayerSockets {
     pub yellow_grass_fill_down: Socket,
 }
 
+pub struct WaterLayerSockets {
+    pub layer_up: Socket,
+    pub layer_down: Socket,
+    pub material: Socket,
+    pub void_and_water: Socket,
+    pub water_and_void: Socket,
+    pub ground_up: Socket,
+}
+
 pub struct TerrainSockets {
     pub void: Socket,
     pub dirt: DirtLayerSockets,
