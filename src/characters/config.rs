@@ -16,3 +16,15 @@ pub struct AnimationDefinition {
     pub frame_time: f32,
     pub directional: bool, // true = 4 rows (one per direction), false = 1 row
 }
+
+#[derive(Component, Asset, TypePath, Debug, Clone, Serialize, Deserialize)]
+pub struct CharacterEntry {
+    pub name: String,
+    pub max_health: f32,
+    pub base_move_speed: f32,
+    pub run_speed_multiplier: f32,
+    pub texture_path: String,
+    pub tile_size: u32,
+    pub atlas_columns: usize,
+    pub animations: HashMap<AnimationType, AnimationDefinition>,
+}
