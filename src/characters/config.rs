@@ -38,3 +38,8 @@ impl CharacterEntry {
             .unwrap_or(0)
     }
 }
+
+#[derive(Asset, TypePath, Debug, Clone, Serialize, Deserialize)]
+pub struct CharactersList {
+    pub characters: Vec<CharacterEntry>,
+}
