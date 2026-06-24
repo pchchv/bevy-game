@@ -50,6 +50,23 @@ impl Default for AnimationController {
     }
 }
 
+impl AnimationController {
+    pub fn get_clip(&self, config: &CharacterEntry) -> Option<AnimationClip> {
+        // 1. Get the definition (e.g. "Walk" data)
+        let def = config.animations.get(&self.current_animation)?;
+        
+        // 2. Calculate the actual row based on facing direction
+        let row = if def.directional {
+            def.start_row + self.facing.direction_index()
+        } else {
+            def.start_row
+        };
+        
+        // 3. Create the clip
+        Some(AnimationClip::new(row, def.frame_count, config.atlas_columns))
+    }
+}
+
 #[derive(Component, Default)]
 pub struct AnimationState {
     pub is_moving: bool,
