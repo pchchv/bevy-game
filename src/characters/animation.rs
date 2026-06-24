@@ -93,4 +93,9 @@ impl AnimationClip {
             index + 1
         }
     }
+    
+    // Check if animation has completed (used for non-looping animations like Jump)
+    pub fn is_complete(self, current_index: usize, timer_finished: bool) -> bool {
+        current_index >= self.last && timer_finished
+    }
 }
