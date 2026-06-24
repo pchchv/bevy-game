@@ -60,3 +60,9 @@ pub struct AnimationState {
 
 #[derive(Component, Deref, DerefMut)]
 pub struct AnimationTimer(pub Timer);
+
+#[derive(Clone, Copy)]
+pub struct AnimationClip {
+    first: usize,
+    last: usize,
+}
