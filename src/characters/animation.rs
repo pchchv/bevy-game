@@ -75,4 +75,13 @@ impl AnimationClip {
             last: first + frame_count - 1,
         }
     }
+    
+    pub fn start(self) -> usize {
+        self.first
+    }
+    
+    // Check if a frame index belongs to this clip
+    pub fn contains(self, index: usize) -> bool {
+        (self.first..=self.last).contains(&index)
+    }
 }
