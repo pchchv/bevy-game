@@ -33,3 +33,10 @@ impl Facing {
         }
     }
 }
+
+// Component that holds animation configuration
+#[derive(Component)]
+pub struct AnimationController {
+    pub current_animation: AnimationType,
+    pub facing: Facing,
+}
