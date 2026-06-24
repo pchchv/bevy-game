@@ -66,3 +66,13 @@ pub struct AnimationClip {
     first: usize,
     last: usize,
 }
+
+impl AnimationClip {
+    pub fn new(row: usize, frame_count: usize, atlas_columns: usize) -> Self {
+        let first = row * atlas_columns;
+        Self {
+            first,
+            last: first + frame_count - 1,
+        }
+    }
+}
