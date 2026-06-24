@@ -84,4 +84,13 @@ impl AnimationClip {
     pub fn contains(self, index: usize) -> bool {
         (self.first..=self.last).contains(&index)
     }
+    
+    // Calculate the next frame, looping back to start if needed
+    pub fn next(self, index: usize) -> usize {
+        if index >= self.last {
+            self.first
+        } else {
+            index + 1
+        }
+    }
 }
