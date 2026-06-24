@@ -116,3 +116,52 @@ impl AnimationClip {
         current_index >= self.last && timer_finished
     }
 }
+
+pub fn animate_characters(
+    time: Res<Time>,
+    mut query: Query<(
+        &AnimationController,
+        &AnimationState,
+        &mut AnimationTimer,
+        &mut Sprite,
+        &CharacterEntry,
+    )>,
+) {
+    for (animated, state, mut timer, mut sprite, config) in query.iter_mut() {
+        let Some(atlas) = sprite.texture_atlas.as_mut() else { continue; };
+        // Get the correct clip for current state/facing
+        let Some(clip) = animated.get_clip(config) else { continue; };
+        // Get timing info
+        let Some(anim_def) = config.animations.get(&animated.current_animation) else { continue; };
+        // Safety: If we somehow ended up on a frame outside our clip, reset.
+        if !clip.contains(atlas.index) {
+            atlas.index = clip.start();
+            timer.0.reset();
+        }
+
+        // Detect state changes
+        let just_started_moving = state.is_moving && !state.was_moving;
+        let just_stopped_moving = !state.is_moving && state.was_moving;
+        let just_started_jumping = state.is_jumping && !state.was_jumping;
+        let just_stopped_jumping = !state.is_jumping && state.was_jumping;
+        let should_animate = state.is_jumping || state.is_moving;
+        let animation_changed = just_started_moving || just_started_jumping || just_stopped_moving || just_stopped_jumping;
+        if animation_changed {
+            // Reset animation
+            atlas.index = clip.start();
+            timer.0.set_duration(std::time::Duration::from_secs_f32(anim_def.frame_time));
+            timer.0.reset();
+        } else if should_animate {
+            // Advance animation
+            timer.tick(time.delta());
+            if timer.just_finished() {
+                atlas.index = clip.next(atlas.index);
+            }
+        } else {
+            // When idle (not moving or jumping), stay on frame 0
+            if atlas.index != clip.start() {
+                atlas.index = clip.start();
+            }
+        }
+    }
+}
