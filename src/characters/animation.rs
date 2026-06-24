@@ -165,3 +165,11 @@ pub fn animate_characters(
         }
     }
 }
+
+// Helper to update "was_moving" flags at the end of the frame
+pub fn update_animation_flags(mut query: Query<&mut AnimationState>) {
+    for mut state in query.iter_mut() {
+        state.was_moving = state.is_moving;
+        state.was_jumping = state.is_jumping;
+    }
+}
