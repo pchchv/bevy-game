@@ -40,3 +40,12 @@ pub struct AnimationController {
     pub current_animation: AnimationType,
     pub facing: Facing,
 }
+
+impl Default for AnimationController {
+    fn default() -> Self {
+        Self {
+            current_animation: AnimationType::Walk,
+            facing: Facing::Down,
+        }
+    }
+}
