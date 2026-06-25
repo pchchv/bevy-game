@@ -16,3 +16,11 @@ fn read_movement_input(input: &ButtonInput<KeyCode>) -> Vec2 {
         .map(|(_, dir)| *dir)
         .sum()
 }
+
+fn calculate_movement_speed(character: &CharacterEntry, is_running: bool) -> f32 {
+    if is_running {
+        character.base_move_speed * character.run_speed_multiplier
+    } else {
+        character.base_move_speed
+    }
+}
