@@ -1,4 +1,5 @@
 mod map;
+mod characters;
 
 use bevy_procedural_tilemaps::prelude::*;
 use bevy::{prelude::*, window::{Window, WindowPlugin, WindowResolution}};
