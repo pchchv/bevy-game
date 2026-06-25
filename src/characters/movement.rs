@@ -72,3 +72,33 @@ pub fn move_player(
         animated.current_animation = AnimationType::Walk;
     }
 }
+
+pub fn update_jump_state(
+    mut query: Query<(
+        &mut AnimationController,
+        &mut AnimationState,
+        &AnimationTimer,
+        &Sprite,
+        &CharacterEntry,
+    ), With<Player>>,
+) {
+    for (mut animated, mut state, timer, sprite, config) in query.iter_mut() {
+        if !state.is_jumping {
+            continue;
+        }
+        
+        let Some(atlas) = sprite.texture_atlas.as_ref() else {
+            continue;
+        };
+        
+        let Some(clip) = animated.get_clip(config) else {
+            continue;
+        };
+        
+        // Check if jump animation has completed
+        if clip.is_complete(atlas.index, timer.just_finished()) {
+            state.is_jumping = false;
+            animated.current_animation = AnimationType::Walk;
+        }
+    }
+}
