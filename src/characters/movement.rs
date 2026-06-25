@@ -2,6 +2,9 @@ use bevy::prelude::*;
 use crate::characters::animation::*;
 use crate::characters::config::{CharacterEntry, AnimationType};
 
+#[derive(Component)]
+pub struct Player;
+
 /// Read directional input and return a direction vector
 fn read_movement_input(input: &ButtonInput<KeyCode>) -> Vec2 {
     const MOVEMENT_KEYS: [(KeyCode, Vec2); 4] = [
