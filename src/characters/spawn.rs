@@ -27,3 +27,22 @@ fn create_character_atlas_layout(atlas_layouts: &mut ResMut<Assets<TextureAtlasL
         None,
     ))
 }
+
+pub fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>, mut character_index: ResMut<CurrentCharacterIndex>) {
+    // Load the characters list
+    let characters_list_handle: Handle<CharactersList> = asset_server.load("characters/characters.ron");
+    // Store the handle in a resource
+    commands.insert_resource(CharactersListResource {
+        handle: characters_list_handle,
+    });
+    
+    // Initialize with first character
+    character_index.index = 0;
+    // Spawn player entity (will be initialized once asset loads)
+    commands.spawn((
+        Player,
+        Transform::from_translation(Vec3::new(0.0, 0.0, PLAYER_Z_POSITION))
+            .with_scale(Vec3::splat(PLAYER_SCALE)),
+        Sprite::default(),
+    ));
+}
