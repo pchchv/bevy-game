@@ -46,3 +46,45 @@ pub fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>, mut 
         Sprite::default(),
     ));
 }
+
+pub fn initialize_player_character(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    characters_lists: Res<Assets<CharactersList>>,
+    character_index: Res<CurrentCharacterIndex>,
+    characters_list_res: Option<Res<CharactersListResource>>,
+    mut query: Query<Entity, (With<Player>, Without<AnimationController>)>,
+) {
+    let Some(characters_list_res) = characters_list_res else {
+        return;
+    };
+    for entity in query.iter_mut() {
+        let Some(characters_list) = characters_lists.get(&characters_list_res.handle) else {
+            continue;
+        };
+        
+        if character_index.index >= characters_list.characters.len() {
+            continue;
+        };
+        
+        let character_entry = &characters_list.characters[character_index.index];
+        let texture = asset_server.load(&character_entry.texture_path);
+        let layout = create_character_atlas_layout(&mut atlas_layouts, character_entry);
+        let sprite = Sprite::from_atlas_image(
+            texture,
+            TextureAtlas {
+                layout,
+                index: 0,
+            },
+        );
+        
+        commands.entity(entity).insert((
+            AnimationController::default(),
+            AnimationState::default(),
+            AnimationTimer(Timer::from_seconds(DEFAULT_ANIMATION_FRAME_TIME, TimerMode::Repeating)),
+            character_entry.clone(),
+            sprite,
+        ));
+    }
+}
