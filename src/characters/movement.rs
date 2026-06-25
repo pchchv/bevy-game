@@ -27,3 +27,48 @@ fn calculate_movement_speed(character: &CharacterEntry, is_running: bool) -> f32
         character.base_move_speed
     }
 }
+
+/// Handle player movement input and update transform/animation
+pub fn move_player(
+    input: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
+    mut query: Query<(
+        &mut Transform, 
+        &mut AnimationController,
+        &mut AnimationState,
+        &CharacterEntry,
+    ), With<Player>>,
+) {
+    let Ok((mut transform, mut animated, mut state, character)) = query.single_mut() else {
+        return;
+    };
+    
+    let direction = read_movement_input(&input);
+    // Check for jump input (space key)
+    if input.just_pressed(KeyCode::Space) {
+        state.is_jumping = true;
+        animated.current_animation = AnimationType::Jump;
+    }
+    
+    // Check if running
+    let is_running = input.pressed(KeyCode::ShiftLeft) || input.pressed(KeyCode::ShiftRight);
+    // Handle movement
+    if direction != Vec2::ZERO {
+        let move_speed = calculate_movement_speed(character, is_running);
+        let delta = direction.normalize() * move_speed * time.delta_secs();
+        transform.translation += delta.extend(0.0);
+        animated.facing = Facing::from_direction(direction);
+        // Only update animation if not jumping
+        if !state.is_jumping {
+            state.is_moving = true;
+            animated.current_animation = if is_running {
+                AnimationType::Run
+            } else {
+                AnimationType::Walk
+            };
+        }
+    } else if !state.is_jumping {
+        state.is_moving = false;
+        animated.current_animation = AnimationType::Walk;
+    }
+}
