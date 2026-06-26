@@ -28,3 +28,11 @@ pub fn spawn_pause_menu(mut commands: Commands) {
     
     info!("Pause menu spawned");
 }
+
+pub fn despawn_pause_menu(mut commands: Commands, query: Query<Entity, With<PauseMenu>>) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn();
+    }
+    
+    info!("Pause menu despawned");
+}
