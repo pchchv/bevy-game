@@ -38,3 +38,11 @@ pub fn animate_loading(time: Res<Time>, mut query: Query<&mut Text, With<Loading
         **text = format!("Loading{}", ".".repeat(dots));
     }
 }
+
+pub fn despawn_loading_screen(mut commands: Commands, query: Query<Entity, With<LoadingScreen>>) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn();
+    }
+    
+    info!("Loading screen despawned");
+}
