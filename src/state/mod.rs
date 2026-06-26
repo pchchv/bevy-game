@@ -25,7 +25,7 @@ impl Plugin for StatePlugin {
             .add_systems(OnEnter(GameState::Paused), pause::spawn_pause_menu)
             .add_systems(OnExit(GameState::Paused), pause::despawn_pause_menu)
             // Pause toggle (works in Playing or Paused states)
-            .add_systems(Update, toggle_pause.run_if(in_state(GameState::Playing).or(in_state(GameState::Paused))));
+            .add_systems(Update, toggle_pause.run_if(in_state(GameState::Playing).or_else(in_state(GameState::Paused))));
     }
 }
 
