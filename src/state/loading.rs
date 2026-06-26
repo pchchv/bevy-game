@@ -21,10 +21,7 @@ pub fn spawn_loading_screen(mut commands: Commands) {
         parent.spawn((
             LoadingText,
             Text::new("Loading..."),
-            TextFont {
-                font_size: 48.0,
-                ..default()
-            },
+            TextFont::from_font_size(48.0),
             TextColor(Color::WHITE),
         ));
     });
