@@ -22,3 +22,23 @@ fn check_assets_loaded(
         next_state.set(GameState::Playing);
     }
 }
+
+fn toggle_pause(
+    input: Res<ButtonInput<KeyCode>>,
+    current_state: Res<State<GameState>>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    if input.just_pressed(KeyCode::Escape) {
+        match current_state.get() {
+            GameState::Playing => {
+                info!("Game paused");
+                next_state.set(GameState::Paused);
+            }
+            GameState::Paused => {
+                info!("Game resumed");
+                next_state.set(GameState::Playing);
+            }
+            _ => {}
+        }
+    }
+}
