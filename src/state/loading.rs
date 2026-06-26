@@ -31,3 +31,10 @@ pub fn spawn_loading_screen(mut commands: Commands) {
     
     info!("Loading screen spawned");
 }
+
+pub fn animate_loading(time: Res<Time>, mut query: Query<&mut Text, With<LoadingText>>) {
+    for mut text in query.iter_mut() {
+        let dots = (time.elapsed_secs() * 2.0) as usize % 4;
+        **text = format!("Loading{}", ".".repeat(dots));
+    }
+}
