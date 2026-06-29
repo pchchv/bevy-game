@@ -38,14 +38,6 @@ impl AnimationController {
     }
 }
 
-#[derive(Component, Default)]
-pub struct AnimationState {
-    pub is_moving: bool,
-    pub was_moving: bool,
-    pub is_jumping: bool,
-    pub was_jumping: bool,
-}
-
 #[derive(Component, Deref, DerefMut)]
 pub struct AnimationTimer(pub Timer);
 
