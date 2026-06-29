@@ -14,3 +14,16 @@ impl Velocity {
         self.0 != Vec2::ZERO
     }
 }
+
+pub fn calculate_velocity(state: CharacterState, direction: Vec2, character: &CharacterEntry) -> Velocity {
+    match state {
+        CharacterState::Idle => Velocity::ZERO,
+        CharacterState::Jumping => Velocity::ZERO,  // No movement during jump
+        CharacterState::Walking => {
+            Velocity(direction.normalize_or_zero() * character.base_move_speed)
+        }
+        CharacterState::Running => {
+            Velocity(direction.normalize_or_zero() * character.base_move_speed * character.run_speed_multiplier)
+        }
+    }
+}
