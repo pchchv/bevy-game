@@ -6,10 +6,9 @@ use crate::characters::config::{CharacterEntry, AnimationType};
 pub const DEFAULT_ANIMATION_FRAME_TIME: f32 = 0.1;
 
 // Component that holds animation configuration
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct AnimationController {
     pub current_animation: AnimationType,
-    pub facing: Facing,
 }
 
 impl Default for AnimationController {
