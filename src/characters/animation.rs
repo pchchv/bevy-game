@@ -11,15 +11,6 @@ pub struct AnimationController {
     pub current_animation: AnimationType,
 }
 
-impl Default for AnimationController {
-    fn default() -> Self {
-        Self {
-            current_animation: AnimationType::Walk,
-            facing: Facing::Down,
-        }
-    }
-}
-
 impl AnimationController {
     pub fn get_clip(&self, config: &CharacterEntry) -> Option<AnimationClip> {
         // 1. Get the definition (e.g. "Walk" data)
