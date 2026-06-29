@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use crate::characters::facing::Facing;
 use crate::characters::config::{CharacterEntry, AnimationType};
+// use crate::characters::state::CharacterState;
 
 // Default animation timing (10 FPS = 0.1 seconds per frame)
 pub const DEFAULT_ANIMATION_FRAME_TIME: f32 = 0.1;
@@ -114,13 +115,5 @@ pub fn animate_characters(
                 atlas.index = clip.start();
             }
         }
-    }
-}
-
-// Helper to update "was_moving" flags at the end of the frame
-pub fn update_animation_flags(mut query: Query<&mut AnimationState>) {
-    for mut state in query.iter_mut() {
-        state.was_moving = state.is_moving;
-        state.was_jumping = state.is_jumping;
     }
 }
