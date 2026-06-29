@@ -27,3 +27,12 @@ pub fn calculate_velocity(state: CharacterState, direction: Vec2, character: &Ch
         }
     }
 }
+
+/// Applies velocity to transform. Pure physics, no game logic.
+pub fn apply_velocity(time: Res<Time>, mut query: Query<(&Velocity, &mut Transform)>) {
+    for (velocity, mut transform) in query.iter_mut() {
+        if velocity.is_moving() {
+            transform.translation += velocity.0.extend(0.0) * time.delta_secs();
+        }
+    }
+}
