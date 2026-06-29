@@ -9,3 +9,10 @@ pub enum CharacterState {
     Running,
     Jumping,
 }
+
+impl CharacterState {
+    /// Check if this is a grounded state (can jump from here)
+    pub fn is_grounded(&self) -> bool {
+        matches!(self, CharacterState::Idle | CharacterState::Walking | CharacterState::Running)
+    }
+}
