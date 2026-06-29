@@ -81,3 +81,37 @@ pub fn handle_player_input(
     // Idle and Jumping = no movement, Walking/Running = movement
     *velocity = super::physics::calculate_velocity(*state, direction, character);
 }
+
+/// Checks if jump animation completed and transitions back to idle
+pub fn update_jump_state(
+    mut query: Query<(
+        &mut CharacterState,
+        &Facing,
+        &AnimationController,
+        &AnimationTimer,
+        &Sprite,
+        &CharacterEntry,
+    ), With<Player>>,
+) {
+    let Ok((mut state, facing, controller, timer, sprite, config)) = query.single_mut() else {
+        return;
+    };
+    
+    // Only check if currently jumping
+    if *state != CharacterState::Jumping {
+        return;
+    }
+    
+    let Some(atlas) = sprite.texture_atlas.as_ref() else {
+        return;
+    };
+    
+    let Some(clip) = controller.get_clip(config, *facing) else {
+        return;
+    };
+    
+    // Check if jump animation has completed
+    if clip.is_complete(atlas.index, timer.just_finished()) {
+        *state = CharacterState::Idle;
+    }
+}
