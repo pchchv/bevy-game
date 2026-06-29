@@ -1,5 +1,7 @@
+pub mod state;
 pub mod spawn;
 pub mod config;
+pub mod facing;
 pub mod movement;
 pub mod animation;
 
