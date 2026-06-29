@@ -19,4 +19,14 @@ impl Facing {
             if velocity.y > 0.0 { Facing::Up } else { Facing::Down }
         }
     }
+    
+    /// Helper to map direction to row offset (0, 1, 2, 3)
+    pub(crate) fn direction_index(self) -> usize {
+        match self {
+            Facing::Up => 0,
+            Facing::Left => 1,
+            Facing::Down => 2,
+            Facing::Right => 3,
+        }
+    }
 }
