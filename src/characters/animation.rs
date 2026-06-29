@@ -90,3 +90,52 @@ pub fn on_state_change_update_animation(
         }
     }
 }
+
+pub fn animations_playback(
+    time: Res<Time>,
+    mut query: Query<(
+        &CharacterState,
+        &Facing,
+        &AnimationController,
+        &mut AnimationTimer,
+        &mut Sprite,
+        &CharacterEntry,
+    )>,
+) {
+    for (state, facing, controller, mut timer, mut sprite, config) in query.iter_mut() {
+        // Don't animate when idle
+        if *state == CharacterState::Idle {
+            // Ensure idle sprite is at frame 0
+            if let Some(atlas) = sprite.texture_atlas.as_mut() {
+                if let Some(clip) = controller.get_clip(config, *facing) {
+                    if atlas.index != clip.start() {
+                        atlas.index = clip.start();
+                    }
+                }
+            }
+            continue;
+        }
+        
+        let Some(atlas) = sprite.texture_atlas.as_mut() else { continue; };
+        let Some(clip) = controller.get_clip(config, *facing) else { continue; };
+        let Some(anim_def) = config.animations.get(&controller.current_animation) else { continue; };
+        
+        // Safety: If we somehow ended up on a frame outside our clip, reset.
+        if !clip.contains(atlas.index) {
+            atlas.index = clip.start();
+            timer.0.reset();
+        }
+        
+        // Update timer duration if needed
+        let expected_duration = std::time::Duration::from_secs_f32(anim_def.frame_time);
+        if timer.0.duration() != expected_duration {
+            timer.0.set_duration(expected_duration);
+        }
+        
+        // Advance animation
+        timer.tick(time.delta());
+        if timer.just_finished() {
+            atlas.index = clip.next(atlas.index);
+        }
+    }
+}
