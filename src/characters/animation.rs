@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use crate::characters::facing::Facing;
+use crate::characters::state::CharacterState;
 use crate::characters::config::{CharacterEntry, AnimationType};
-// use crate::characters::state::CharacterState;
 
 // Default animation timing (10 FPS = 0.1 seconds per frame)
 pub const DEFAULT_ANIMATION_FRAME_TIME: f32 = 0.1;
@@ -66,5 +66,27 @@ impl AnimationClip {
     // Check if animation has completed (used for non-looping animations like Jump)
     pub fn is_complete(self, current_index: usize, timer_finished: bool) -> bool {
         current_index >= self.last && timer_finished
+    }
+}
+
+pub fn on_state_change_update_animation(
+    mut query: Query<
+        (&CharacterState, &mut AnimationController, &mut AnimationTimer),
+        Changed<CharacterState>
+    >,
+) {
+    for (state, mut controller, mut timer) in query.iter_mut() {
+        // Select animation based on new state
+        let new_animation = match state {
+            CharacterState::Idle | CharacterState::Walking => AnimationType::Walk,
+            CharacterState::Running => AnimationType::Run,
+            CharacterState::Jumping => AnimationType::Jump,
+        };
+        
+        // Only update and reset timer if animation actually changed
+        if controller.current_animation != new_animation {
+            controller.current_animation = new_animation;
+            timer.0.reset();
+        }
     }
 }
