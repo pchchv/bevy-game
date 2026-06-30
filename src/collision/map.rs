@@ -103,4 +103,13 @@ impl CollisionMap {
         // Check if closest point is within radius
         center.distance_squared(closest) <= radius * radius
     }
+
+    /// Check if a position with radius is within map bounds.
+    fn is_within_bounds(&self, center: Vec2, radius: f32) -> bool {
+        let left = self.origin_x;
+        let right = self.origin_x + self.width as f32 * self.tile_size;
+        let bottom = self.origin_y;
+        let top = self.origin_y + self.height as f32 * self.tile_size;
+        center.x - radius >= left && center.x + radius <= right && center.y - radius >= bottom && center.y + radius <= top
+    }
 }
