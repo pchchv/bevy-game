@@ -22,4 +22,13 @@ impl TileType {
     pub fn is_walkable(&self) -> bool {
         !matches!(self, TileType::Water | TileType::Tree | TileType::Rock)
     }
+
+    /// Get the collision adjustment for this tile type.
+    /// Positive = push player away, negative = allow corner cutting.
+    pub fn collision_adjustment(&self) -> f32 {
+        match self {
+            TileType::Tree | TileType::Rock => -0.2,  // Allow cutting corners
+            _ => 0.0,
+        }
+    }
 }
