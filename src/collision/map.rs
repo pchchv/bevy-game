@@ -30,4 +30,10 @@ impl CollisionMap {
             origin_y,
         }
     }
+
+    /// Convert 2D grid coordinates to 1D array index.
+    #[inline]
+    fn xy_to_idx(&self, x: i32, y: i32) -> usize {
+        (y * self.width + x) as usize
+    }
 }
