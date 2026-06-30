@@ -42,4 +42,11 @@ impl CollisionMap {
     pub fn in_bounds(&self, x: i32, y: i32) -> bool {
         x >= 0 && x < self.width && y >= 0 && y < self.height
     }
+
+    /// Convert world position to grid coordinates.
+    pub fn world_to_grid(&self, world_pos: Vec2) -> IVec2 {
+        let grid_x = ((world_pos.x - self.origin_x) / self.tile_size).floor() as i32;
+        let grid_y = ((world_pos.y - self.origin_y) / self.tile_size).floor() as i32;
+        IVec2::new(grid_x, grid_y)
+    }
 }
