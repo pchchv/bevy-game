@@ -36,4 +36,10 @@ impl CollisionMap {
     fn xy_to_idx(&self, x: i32, y: i32) -> usize {
         (y * self.width + x) as usize
     }
+
+    /// Check if grid coordinates are within bounds.
+    #[inline]
+    pub fn in_bounds(&self, x: i32, y: i32) -> bool {
+        x >= 0 && x < self.width && y >= 0 && y < self.height
+    }
 }
