@@ -79,4 +79,10 @@ impl CollisionMap {
     pub fn is_walkable(&self, x: i32, y: i32) -> bool {
         self.get_tile(x, y).map_or(false, |t| t.is_walkable())
     }
+
+    /// Check if a world position is walkable.
+    pub fn is_world_pos_walkable(&self, world_pos: Vec2) -> bool {
+        let grid_pos = self.world_to_grid(world_pos);
+        self.is_walkable(grid_pos.x, grid_pos.y)
+    }
 }
