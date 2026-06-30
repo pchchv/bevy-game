@@ -49,4 +49,12 @@ impl CollisionMap {
         let grid_y = ((world_pos.y - self.origin_y) / self.tile_size).floor() as i32;
         IVec2::new(grid_x, grid_y)
     }
+
+    /// Convert grid coordinates to world position (tile center).
+    pub fn grid_to_world(&self, grid_x: i32, grid_y: i32) -> Vec2 {
+        Vec2::new(
+            self.origin_x + (grid_x as f32 + 0.5) * self.tile_size,
+            self.origin_y + (grid_y as f32 + 0.5) * self.tile_size,
+        )
+    }
 }
