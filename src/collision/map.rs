@@ -57,4 +57,21 @@ impl CollisionMap {
             self.origin_y + (grid_y as f32 + 0.5) * self.tile_size,
         )
     }
+
+    /// Get the tile type at grid coordinates.
+    pub fn get_tile(&self, x: i32, y: i32) -> Option<TileType> {
+        if self.in_bounds(x, y) {
+            Some(self.tiles[self.xy_to_idx(x, y)])
+        } else {
+            None
+        }
+    }
+
+    /// Set a tile at grid coordinates.
+    pub fn set_tile(&mut self, x: i32, y: i32, tile_type: TileType) {
+        if self.in_bounds(x, y) {
+            let idx = self.xy_to_idx(x, y);
+            self.tiles[idx] = tile_type;
+        }
+    }
 }
