@@ -16,3 +16,18 @@ pub struct CollisionMap {
     origin_x: f32,
     origin_y: f32,
 }
+
+impl CollisionMap {
+    /// Create a new collision map with specified dimensions and origin.
+    pub fn new(width: i32, height: i32, tile_size: f32, origin_x: f32, origin_y: f32) -> Self {
+        let size = (width * height) as usize;
+        Self {
+            tiles: vec![TileType::Empty; size],
+            width,
+            height,
+            tile_size,
+            origin_x,
+            origin_y,
+        }
+    }
+}
