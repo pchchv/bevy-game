@@ -16,3 +16,10 @@ pub enum TileType {
     Tree,
     Rock,
 }
+
+impl TileType {
+    /// Check if this tile type allows movement through it.
+    pub fn is_walkable(&self) -> bool {
+        !matches!(self, TileType::Water | TileType::Tree | TileType::Rock)
+    }
+}
