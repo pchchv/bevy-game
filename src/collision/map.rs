@@ -37,6 +37,12 @@ impl CollisionMap {
     #[cfg(debug_assertions)]
     pub fn height(&self) -> i32 { self.height }
     
+    #[cfg(debug_assertions)]
+    pub fn tile_size(&self) -> f32 { self.tile_size }
+    
+    #[cfg(debug_assertions)]
+    pub fn origin(&self) -> Vec2 { Vec2::new(self.origin_x, self.origin_y) }
+
     /// Convert 2D grid coordinates to 1D array index.
     #[inline]
     fn xy_to_idx(&self, x: i32, y: i32) -> usize {
