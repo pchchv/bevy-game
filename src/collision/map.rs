@@ -149,4 +149,44 @@ impl CollisionMap {
         }
         true
     }
+
+    /// Perform swept circle movement with axis-sliding.
+    /// Returns the furthest valid position the circle can reach.
+    pub fn sweep_circle(&self, start: Vec2, end: Vec2, radius: f32) -> Vec2 {
+        let delta = end - start;
+        // No movement needed
+        if delta.length() < 0.001 {
+            return start;
+        }
+
+        // Step size (quarter tile for smooth collision)
+        let max_step = self.tile_size * 0.25;
+        let steps = (delta.length() / max_step).ceil().max(1.0) as i32;
+        let step_vec = delta / steps as f32;
+        let mut pos = start;
+        for _ in 0..steps {
+            let candidate = pos + step_vec;
+            if self.is_circle_clear(candidate, radius) {
+                pos = candidate;
+            } else {
+                // Try sliding along X axis only
+                let try_x = Vec2::new(candidate.x, pos.y);
+                if self.is_circle_clear(try_x, radius) {
+                    pos = try_x;
+                    continue;
+                }
+
+                // Try sliding along Y axis only
+                let try_y = Vec2::new(pos.x, candidate.y);
+                if self.is_circle_clear(try_y, radius) {
+                    pos = try_y;
+                    continue;
+                }
+
+                // Completely blocked
+                break;
+            }
+        }
+        pos
+    }
 }
