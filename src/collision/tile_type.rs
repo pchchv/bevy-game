@@ -32,3 +32,16 @@ impl TileType {
         }
     }
 }
+
+/// Component to mark entities with their collision type.
+/// Attached to tiles during map generation.
+#[derive(Component, Debug, Clone)]
+pub struct TileMarker {
+    pub tile_type: TileType,
+}
+
+impl TileMarker {
+    pub fn new(tile_type: TileType) -> Self {
+        Self { tile_type }
+    }
+}
