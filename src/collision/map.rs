@@ -85,4 +85,22 @@ impl CollisionMap {
         let grid_pos = self.world_to_grid(world_pos);
         self.is_walkable(grid_pos.x, grid_pos.y)
     }
+
+    /// Check if a circle intersects with a tile's bounding box.
+    fn circle_intersects_tile(&self, center: Vec2, radius: f32, gx: i32, gy: i32) -> bool {
+        // Tile bounding box
+        let tile_min = Vec2::new(
+            self.origin_x + gx as f32 * self.tile_size,
+            self.origin_y + gy as f32 * self.tile_size,
+        );
+        let tile_max = tile_min + Vec2::splat(self.tile_size);
+        // Find closest point on tile to circle center
+        let closest = Vec2::new(
+            center.x.clamp(tile_min.x, tile_max.x),
+            center.y.clamp(tile_min.y, tile_max.y),
+        );
+
+        // Check if closest point is within radius
+        center.distance_squared(closest) <= radius * radius
+    }
 }
