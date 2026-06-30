@@ -112,4 +112,41 @@ impl CollisionMap {
         let top = self.origin_y + self.height as f32 * self.tile_size;
         center.x - radius >= left && center.x + radius <= right && center.y - radius >= bottom && center.y + radius <= top
     }
+
+    /// Check if a circle at the given world position is clear of obstacles.
+    pub fn is_circle_clear(&self, center: Vec2, radius: f32) -> bool {
+        // Early bounds check
+        if !self.is_within_bounds(center, radius) {
+            return false;
+        }
+
+        // Point collision if no radius
+        if radius <= 0.0 {
+            return self.is_world_pos_walkable(center);
+        }
+
+        // Find grid cells that could overlap the circle
+        let min_gx = ((center.x - radius - self.origin_x) / self.tile_size).floor() as i32;
+        let max_gx = ((center.x + radius - self.origin_x) / self.tile_size).floor() as i32;
+        let min_gy = ((center.y - radius - self.origin_y) / self.tile_size).floor() as i32;
+        let max_gy = ((center.y + radius - self.origin_y) / self.tile_size).floor() as i32;
+        for gy in min_gy..=max_gy {
+            for gx in min_gx..=max_gx {
+                if !self.in_bounds(gx, gy) {
+                    return false;  // Out of bounds = blocked
+                }
+
+                if let Some(tile) = self.get_tile(gx, gy) {
+                    if !tile.is_walkable() {
+                        // Apply tile-specific collision adjustment
+                        let effective_radius = radius + tile.collision_adjustment() * self.tile_size;
+                        if self.circle_intersects_tile(center, effective_radius, gx, gy) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        true
+    }
 }
