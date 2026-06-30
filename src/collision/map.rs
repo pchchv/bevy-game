@@ -57,7 +57,7 @@ impl CollisionMap {
             self.origin_y + (grid_y as f32 + 0.5) * self.tile_size,
         )
     }
-
+    
     /// Get the tile type at grid coordinates.
     pub fn get_tile(&self, x: i32, y: i32) -> Option<TileType> {
         if self.in_bounds(x, y) {
@@ -73,5 +73,10 @@ impl CollisionMap {
             let idx = self.xy_to_idx(x, y);
             self.tiles[idx] = tile_type;
         }
+    }
+
+    /// Check if a grid position is walkable.
+    pub fn is_walkable(&self, x: i32, y: i32) -> bool {
+        self.get_tile(x, y).map_or(false, |t| t.is_walkable())
     }
 }
