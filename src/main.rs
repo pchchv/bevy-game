@@ -1,5 +1,6 @@
 mod map;
 mod state;
+mod collision;
 mod characters;
 
 use bevy_procedural_tilemaps::prelude::*;
@@ -29,6 +30,7 @@ fn main() {
         )
         .add_plugins(ProcGenSimplePlugin::<Cartesian3D, Sprite>::default())
         .add_plugins(state::StatePlugin)
+        .add_plugins(collision::CollisionPlugin)
         .add_plugins(characters::CharactersPlugin)
         .add_systems(Startup, setup_camera)
         .run();
