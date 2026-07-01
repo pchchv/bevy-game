@@ -71,12 +71,15 @@ pub fn load_assets(tilemap_handles: &TilemapHandles, assets_definitions: Vec<Vec
                 sprite_name,
                 grid_offset,
                 offset,
-                components_spawner,
+                tile_type,
             } = asset_def;
 
             let Some(atlas_index) = TILEMAP.sprite_index(sprite_name) else {
                 panic!("Unknown atlas sprite '{}'", sprite_name);
             };
+
+            // Create the spawner function that adds components
+            let spawner = create_spawner(tile_type);
 
             models_assets.add(
                 model_index,
@@ -84,9 +87,9 @@ pub fn load_assets(tilemap_handles: &TilemapHandles, assets_definitions: Vec<Vec
                     assets_bundle: tilemap_handles.sprite(atlas_index),
                     grid_offset,
                     world_offset: offset,
-                    spawn_commands: components_spawner,
+                    spawn_commands: spawner,
                 },
-            )
+            );
         }
     }
     models_assets
