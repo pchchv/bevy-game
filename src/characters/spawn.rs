@@ -5,9 +5,8 @@ use crate::characters::input::Player;
 use crate::characters::state::CharacterState;
 use crate::characters::physics::Velocity;
 use crate::characters::facing::Facing;
-
-const PLAYER_SCALE: f32 = 0.8;
-const PLAYER_Z_POSITION: f32 = 20.0;
+use crate::characters::collider::Collider;
+use crate::config::player::{PLAYER_SCALE, PLAYER_Z_POSITION};
 
 #[derive(Resource, Default)]
 pub struct CurrentCharacterIndex {
@@ -87,6 +86,7 @@ pub fn initialize_player_character(
             CharacterState::default(),
             Velocity::default(),
             Facing::default(),
+            Collider::default(),
             AnimationTimer(Timer::from_seconds(DEFAULT_ANIMATION_FRAME_TIME, TimerMode::Repeating)),
             character_entry.clone(),
             sprite,
