@@ -1,5 +1,6 @@
 mod map;
 mod state;
+mod config;
 mod collision;
 mod characters;
 
