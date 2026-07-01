@@ -29,3 +29,34 @@ impl Collider {
         transform.translation.truncate() + self.offset
     }
 }
+/// System that validates movement against the collision map.
+/// 
+/// Runs after input (which sets velocity) but before physics (which applies velocity).
+/// Modifies velocity to prevent movement into unwalkable tiles.
+pub fn validate_movement(map: Option<Res<CollisionMap>>, time: Res<Time>, mut query: Query<(&Transform, &mut Velocity, &Collider)>) {
+    let Some(map) = map else { return };
+    for (transform, mut velocity, collider) in query.iter_mut() {
+        // Skip if not moving
+        if !velocity.is_moving() {
+            continue;
+        }
+
+        // Current collider position
+        let current_pos = collider.world_position(transform);
+        // Desired new position based on velocity
+        let delta = velocity.0 * time.delta_secs();
+        let desired_pos = current_pos + delta;
+        // Use swept collision to find valid position
+        let valid_pos = map.sweep_circle(current_pos, desired_pos, collider.radius);
+        // Calculate what velocity would get us to valid_pos
+        let actual_delta = valid_pos - current_pos;
+        // Only update velocity if collision modified our path
+        if (actual_delta - delta).length_squared() > 0.001 {
+            // Convert position delta back to velocity
+            let dt = time.delta_secs();
+            if dt > 0.0 {
+                velocity.0 = actual_delta / dt;
+            }
+        }
+    }
+}
