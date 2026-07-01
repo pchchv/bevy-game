@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_procedural_tilemaps::prelude::*;
+use crate::collision::TileType;
 use crate::map::tilemap::TILEMAP;
 
 #[derive(Clone)]
@@ -10,8 +11,8 @@ pub struct SpawnableAsset {
     grid_offset: GridDelta,
     /// Offset in world coordinates (fine positioning)
     offset: Vec3,
-    /// Function to add custom components (like collision, physics, etc.)
-    components_spawner: fn(&mut EntityCommands),
+    /// The tile type for collision detection
+    tile_type: Option<TileType>,
 }
 
 impl SpawnableAsset {
@@ -20,10 +21,11 @@ impl SpawnableAsset {
             sprite_name,
             grid_offset: GridDelta::new(0, 0, 0),
             offset: Vec3::ZERO,
-            components_spawner: |_| {}, // Default: no extra components
+            tile_type: None,
         }
     }
 
+    /// Set grid offset for multi-tile objects.
     pub fn with_grid_offset(mut self, offset: GridDelta) -> Self {
         self.grid_offset = offset;
         self
