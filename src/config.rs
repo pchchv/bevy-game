@@ -9,3 +9,12 @@ pub mod player {
     /// Visual scale of the player sprite
     pub const PLAYER_SCALE: f32 = 0.8;
 }
+
+/// Map/terrain configuration
+pub mod map {
+    /// Size of a single tile in world units
+    pub const TILE_SIZE: f32 = 32.0;
+    /// Grid dimensions
+    pub const GRID_X: u32 = 25;
+    pub const GRID_Y: u32 = 18;
+}
