@@ -93,3 +93,35 @@ pub fn build_collision_map(
     commands.insert_resource(map);
     built.0 = true;
 }
+
+/// Convert water tiles adjacent to walkable tiles into shore tiles.
+fn convert_water_edges_to_shore(map: &mut CollisionMap) {
+    let mut shores = Vec::new();
+    // Find water tiles that touch walkable tiles
+    for y in 0..map.height() {
+        for x in 0..map.width() {
+            if map.get_tile(x, y) != Some(TileType::Water) {
+                continue;
+            }
+
+            // Check 8 neighbors
+            let neighbors = [
+                (x - 1, y),     (x + 1, y),     // left, right
+                (x, y - 1),     (x, y + 1),     // down, up
+                (x - 1, y - 1), (x + 1, y - 1), // bottom corners
+                (x - 1, y + 1), (x + 1, y + 1), // top corners
+            ];
+
+            for (nx, ny) in neighbors {
+                if map.is_walkable(nx, ny) {
+                    shores.push((x, y));
+                    break;
+                }
+            }
+        }
+    }
+
+    for (x, y) in shores {
+        map.set_tile(x, y, TileType::Shore);
+    }
+}
