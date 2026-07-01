@@ -30,6 +30,12 @@ impl SpawnableAsset {
         self.grid_offset = offset;
         self
     }
+
+    /// Set tile type for collision detection.
+    pub fn with_tile_type(mut self, tile_type: TileType) -> Self { 
+        self.tile_type = Some(tile_type);
+        self
+    }
 }
 
 #[derive(Clone)]
