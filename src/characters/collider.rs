@@ -22,3 +22,10 @@ impl Default for Collider {
         }
     }
 }
+
+impl Collider {
+    /// Get the world position of this collider given an entity's transform.
+    pub fn world_position(&self, transform: &Transform) -> Vec2 {
+        transform.translation.truncate() + self.offset
+    }
+}
