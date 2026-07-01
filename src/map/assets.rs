@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_procedural_tilemaps::prelude::*;
-use crate::collision::TileType;
 use crate::map::tilemap::TILEMAP;
+use crate::collision::{TileMarker, TileType};
 
 #[derive(Clone)]
 pub struct SpawnableAsset {
@@ -90,4 +90,36 @@ pub fn load_assets(tilemap_handles: &TilemapHandles, assets_definitions: Vec<Vec
         }
     }
     models_assets
+}
+
+fn create_spawner(tile_type: Option<TileType>) -> fn(&mut EntityCommands) {
+    match tile_type {
+        // Tile types without pickable
+        Some(TileType::Dirt) => |e: &mut EntityCommands| {
+            e.insert(TileMarker::new(TileType::Dirt));
+        },
+        Some(TileType::Grass) => |e: &mut EntityCommands| {
+            e.insert(TileMarker::new(TileType::Grass));
+        },
+        Some(TileType::YellowGrass) => |e: &mut EntityCommands| {
+            e.insert(TileMarker::new(TileType::YellowGrass));
+        },
+        Some(TileType::Water) => |e: &mut EntityCommands| {
+            e.insert(TileMarker::new(TileType::Water));
+        },
+        Some(TileType::Shore) => |e: &mut EntityCommands| {
+            e.insert(TileMarker::new(TileType::Shore));
+        },
+        Some(TileType::Tree) => |e: &mut EntityCommands| {
+            e.insert(TileMarker::new(TileType::Tree));
+        },
+        Some(TileType::Rock) => |e: &mut EntityCommands| {
+            e.insert(TileMarker::new(TileType::Rock));
+        },
+        Some(TileType::Empty) => |e: &mut EntityCommands| {
+            e.insert(TileMarker::new(TileType::Empty));
+        },
+        // Default: no components
+        _ => |_: &mut EntityCommands| {},
+    }
 }
