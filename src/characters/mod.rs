@@ -6,6 +6,7 @@ pub mod facing;
 pub mod physics;
 pub mod collider;
 pub mod animation;
+pub mod rendering;
 
 use crate::state::GameState;
 
@@ -34,9 +35,10 @@ impl Plugin for CharactersPlugin {
             
             // 4. Physics applies velocity to transform
             physics::apply_velocity,
+            rendering::update_player_depth,
             
             // 5. Animation ticks frames
             animation::animations_playback,
-        ).chain().run_if(in_state(GameState::Playing)));
+).chain().run_if(in_state(GameState::Playing)));
     }
 }
