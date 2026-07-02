@@ -6,7 +6,7 @@ mod characters;
 
 use bevy_procedural_tilemaps::prelude::*;
 use bevy::{prelude::*, window::{Window, WindowPlugin, WindowResolution}};
-use crate::map::generate::map_pixel_dimensions;
+use crate::map::generate::{map_pixel_dimensions, setup_generator};
 
 fn main() {
     let map_size = map_pixel_dimensions();
@@ -33,7 +33,7 @@ fn main() {
         .add_plugins(state::StatePlugin)
         .add_plugins(collision::CollisionPlugin)
         .add_plugins(characters::CharactersPlugin)
-        .add_systems(Startup, setup_camera)
+        .add_systems(Startup, (setup_camera, setup_generator))
         .run();
 }
 
