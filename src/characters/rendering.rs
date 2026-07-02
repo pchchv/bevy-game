@@ -1,5 +1,3 @@
-//! Rendering utilities for depth sorting.
-
 use bevy::prelude::*;
 
 use crate::characters::input::Player;

@@ -16,7 +16,6 @@ pub use systems::CollisionMapBuilt;
 #[cfg(debug_assertions)]
 pub use debug::DebugCollisionEnabled;
 
-/// Plugin for collision detection functionality
 pub struct CollisionPlugin;
 
 impl Plugin for CollisionPlugin {

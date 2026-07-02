@@ -19,7 +19,7 @@ pub fn spawn_pause_menu(mut commands: Commands) {
             Text::new("PAUSED\n\nPress ESC to resume"),
             TextFont::from_font_size(48.0),
             TextColor(Color::WHITE),
-            TextLayout::justify(Justify::Center), 
+            TextLayout::justify(Justify::Center),
         ));
     });
     

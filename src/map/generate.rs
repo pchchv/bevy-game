@@ -25,7 +25,7 @@ pub fn map_pixel_dimensions() -> Vec2 {
 pub fn setup_generator(mut commands: Commands, asset_server: Res<AssetServer>, mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>) {
     // 1. Rules Initialization - Get tile definitions and connection rules
     let (assets_definitions, models, socket_collection) = build_world();
-    // Use ZForward as the up axis (rotation axis for models) since we are using Bevy in 2D
+    // Use ZForward as the up axis (rotation axis for models) since use Bevy in 2D
     let rules = RulesBuilder::new_cartesian_3d(models, socket_collection).with_rotation_axis(Direction::ZForward).build().unwrap();
     // 2. Grid - Create 3D world space with wrapping behavior (false, false, false)
     let grid = CartesianGrid::new_cartesian_3d(GRID_X, GRID_Y, GRID_Z, false, false, false);

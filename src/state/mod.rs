@@ -13,7 +13,7 @@ pub struct StatePlugin;
 impl Plugin for StatePlugin {
     fn build(&self, app: &mut App) {
         app
-            .init_state::<GameState>() 
+            .init_state::<GameState>()
             // Loading state systems
             .add_systems(OnEnter(GameState::Loading), loading::spawn_loading_screen)
             .add_systems(Update, (check_assets_loaded, loading::animate_loading).run_if(in_state(GameState::Loading)))

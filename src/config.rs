@@ -1,5 +1,3 @@
-//! Centralized configuration constants for the game.
-
 /// Player-related configuration
 pub mod player {
     /// Collision radius for the player's collider (in world units)

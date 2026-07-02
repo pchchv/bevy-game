@@ -10,7 +10,7 @@ use crate::config::player::{COLLIDER_RADIUS};
 pub struct Collider {
     /// Radius of the circular collider in world units
     pub radius: f32,
-    /// Offset from entity center
+    /// Offset from entity center (e.g., Vec2(0, -25) for feet)
     pub offset: Vec2,
 }
 
