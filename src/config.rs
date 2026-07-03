@@ -10,11 +10,14 @@ pub mod player {
 
 /// Map/terrain configuration
 pub mod map {
-    /// Size of a single tile in world units
-    pub const TILE_SIZE: f32 = 32.0;
+    /// Size of a single tile in world units (64px base * 1.0 scale = 64)
+    /// NOTE: This must match TILE_SIZE in generate.rs!
+    pub const TILE_SIZE: f32 = 64.0;
     /// Grid dimensions
     pub const GRID_X: u32 = 25;
     pub const GRID_Y: u32 = 18;
+    /// Z-height of each layer (used for Y-based depth sorting)
+    pub const NODE_SIZE_Z: f32 = 1.0;
 }
 
 /// Pickup/inventory configuration
