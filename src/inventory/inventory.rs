@@ -59,4 +59,19 @@ impl Inventory {
         *entry += 1;
         *entry
     }
+
+    /// Get a summary string of inventory contents.
+    pub fn summary(&self) -> String {
+        if self.items.is_empty() {
+            return "empty".to_string();
+        }
+
+        let mut parts: Vec<String> = self
+            .items
+            .iter()
+            .map(|(kind, count)| format!("{}: {}", kind, count))
+            .collect();
+        parts.sort();
+        parts.join(", ")
+    }
 }
