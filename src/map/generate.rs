@@ -9,9 +9,9 @@ use crate::map::{assets::{load_assets, prepare_tilemap_handles}, rules::build_wo
 const ASSETS_PATH: &str = "tile_layers";
 const TILEMAP_FILE: &str = "tilemap.png";
 /// Size of a grid node in world units
-const NODE_SIZE: Vec3 = Vec3::new(TILE_SIZE, TILE_SIZE, 1.);
+const NODE_SIZE: Vec3 = Vec3::new(TILE_SIZE, TILE_SIZE, NODE_SIZE_Z);
 
-const ASSETS_SCALE: Vec3 = Vec3::ONE;
+const ASSETS_SCALE: Vec3 = Vec3::new(2.0, 2.0, 1.0);
 /// Number of z layers in the map, derived from the default terrain layers.
 const GRID_Z: u32 = 5;
 
