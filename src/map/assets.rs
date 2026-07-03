@@ -6,14 +6,11 @@ use crate::collision::{TileMarker, TileType};
 
 #[derive(Clone)]
 pub struct SpawnableAsset {
-    /// Name of the sprite inside our tilemap atlas
     sprite_name: &'static str,
-    /// Offset in grid coordinates (for multi-tile objects)
     grid_offset: GridDelta,
-    /// Offset in world coordinates (fine positioning)
     offset: Vec3,
-    /// The tile type for collision detection
     tile_type: Option<TileType>,
+    pickable: Option<ItemKind>,
 }
 
 impl SpawnableAsset {
@@ -23,6 +20,7 @@ impl SpawnableAsset {
             grid_offset: GridDelta::new(0, 0, 0),
             offset: Vec3::ZERO,
             tile_type: None,
+            pickable: None,
         }
     }
 
