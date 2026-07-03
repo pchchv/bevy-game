@@ -16,3 +16,9 @@ pub mod map {
     pub const GRID_X: u32 = 25;
     pub const GRID_Y: u32 = 18;
 }
+
+/// Pickup/inventory configuration
+pub mod pickup {
+    /// Default radius for item pickup detection (in world units)
+    pub const DEFAULT_RADIUS: f32 = 40.0;
+}
