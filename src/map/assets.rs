@@ -1,6 +1,7 @@
 use bevy::prelude::*;
-use bevy_procedural_tilemaps::prelude::*;
 use crate::map::tilemap::TILEMAP;
+use bevy_procedural_tilemaps::prelude::*;
+use crate::inventory::ItemKind;
 use crate::collision::{TileMarker, TileType};
 
 #[derive(Clone)]
@@ -131,4 +132,10 @@ fn create_spawner(tile_type: Option<TileType>) -> fn(&mut EntityCommands) {
         // Default: no components
         _ => |_: &mut EntityCommands| {},
     }
+}
+
+/// Make this asset a pickable item.
+pub fn with_pickable(mut self, kind: ItemKind) -> Self {
+    self.pickable = Some(kind);
+    self
 }
