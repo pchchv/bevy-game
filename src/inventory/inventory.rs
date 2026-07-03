@@ -51,3 +51,12 @@ impl Pickable {
 pub struct Inventory {
     items: HashMap<ItemKind, u32>,
 }
+
+impl Inventory {
+    /// Add an item to the inventory, returns new count.
+    pub fn add(&mut self, kind: ItemKind) -> u32 {
+        let entry = self.items.entry(kind).or_insert(0);
+        *entry += 1;
+        *entry
+    }
+}
