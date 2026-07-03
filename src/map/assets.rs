@@ -35,6 +35,12 @@ impl SpawnableAsset {
         self.tile_type = Some(tile_type);
         self
     }
+    
+    /// Make this asset a pickable item.
+    pub fn with_pickable(mut self, kind: ItemKind) -> Self {
+        self.pickable = Some(kind);
+        self
+    }
 }
 
 #[derive(Clone)]
@@ -143,10 +149,4 @@ fn create_spawner(tile_type: Option<TileType>, pickable: Option<ItemKind>) -> fn
         // Default: no components
         _ => |_: &mut EntityCommands| {},
     }
-}
-
-/// Make this asset a pickable item.
-pub fn with_pickable(mut self, kind: ItemKind) -> Self {
-    self.pickable = Some(kind);
-    self
 }

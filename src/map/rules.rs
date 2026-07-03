@@ -601,7 +601,7 @@ pub fn build_props_layer(
         plant_prop.clone(), 
         vec![SpawnableAsset::new("plant_2")
         .with_tile_type(TileType::Grass)
-        .with_pickable(ItemKind::Plant2)  // Add this line
+        .with_pickable(ItemKind::Plant2)
         ]
     );
     terrain_model_builder.create_model(
