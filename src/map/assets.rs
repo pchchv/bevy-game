@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use crate::map::tilemap::TILEMAP;
 use bevy_procedural_tilemaps::prelude::*;
-use crate::inventory::ItemKind;
+use crate::inventory::{ItemKind, Pickable};
 use crate::collision::{TileMarker, TileType};
 
 #[derive(Clone)]
@@ -77,6 +77,7 @@ pub fn load_assets(tilemap_handles: &TilemapHandles, assets_definitions: Vec<Vec
                 grid_offset,
                 offset,
                 tile_type,
+                pickable,
             } = asset_def;
 
             let Some(atlas_index) = TILEMAP.sprite_index(sprite_name) else {
@@ -84,7 +85,7 @@ pub fn load_assets(tilemap_handles: &TilemapHandles, assets_definitions: Vec<Vec
             };
 
             // Create the spawner function that adds components
-            let spawner = create_spawner(tile_type);
+            let spawner = create_spawner(tile_type, pickable); // Line update alert
 
             models_assets.add(
                 model_index,
