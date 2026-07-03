@@ -29,3 +29,19 @@ impl fmt::Display for ItemKind {
         f.write_str(self.display_name())
     }
 }
+
+/// Component marking an entity as collectible.
+#[derive(Component, Debug)]
+pub struct Pickable {
+    pub kind: ItemKind,
+    pub radius: f32,
+}
+
+impl Pickable {
+    pub fn new(kind: ItemKind) -> Self {
+        Self {
+            kind,
+            radius: DEFAULT_RADIUS,
+        }
+    }
+}
