@@ -22,3 +22,11 @@ pub mod pickup {
     /// Default radius for item pickup detection (in world units)
     pub const DEFAULT_RADIUS: f32 = 40.0;
 }
+
+/// Camera configuration
+pub mod camera {
+    /// How fast the camera interpolates toward the player (higher = snappier)
+    pub const CAMERA_LERP_SPEED: f32 = 6.0;
+    /// Z position for the camera (must be high to see all layers)
+    pub const CAMERA_Z: f32 = 1000.0;
+}
