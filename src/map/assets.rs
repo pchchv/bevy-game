@@ -100,32 +100,44 @@ pub fn load_assets(tilemap_handles: &TilemapHandles, assets_definitions: Vec<Vec
     models_assets
 }
 
-fn create_spawner(tile_type: Option<TileType>) -> fn(&mut EntityCommands) {
-    match tile_type {
+fn create_spawner(tile_type: Option<TileType>, pickable: Option<ItemKind>) -> fn(&mut EntityCommands) {
+    match (tile_type, pickable) {
         // Tile types without pickable
-        Some(TileType::Dirt) => |e: &mut EntityCommands| {
+        (Some(TileType::Dirt), None) => |e: &mut EntityCommands| {
             e.insert(TileMarker::new(TileType::Dirt));
         },
-        Some(TileType::Grass) => |e: &mut EntityCommands| {
+        (Some(TileType::Grass), None) => |e: &mut EntityCommands| {
             e.insert(TileMarker::new(TileType::Grass));
         },
-        Some(TileType::YellowGrass) => |e: &mut EntityCommands| {
+        (Some(TileType::YellowGrass), None) => |e: &mut EntityCommands| {
             e.insert(TileMarker::new(TileType::YellowGrass));
         },
-        Some(TileType::Water) => |e: &mut EntityCommands| {
+        (Some(TileType::Water), None) => |e: &mut EntityCommands| {
             e.insert(TileMarker::new(TileType::Water));
         },
-        Some(TileType::Shore) => |e: &mut EntityCommands| {
+        (Some(TileType::Shore), None) => |e: &mut EntityCommands| {
             e.insert(TileMarker::new(TileType::Shore));
         },
-        Some(TileType::Tree) => |e: &mut EntityCommands| {
+        (Some(TileType::Tree), None) => |e: &mut EntityCommands| {
             e.insert(TileMarker::new(TileType::Tree));
         },
-        Some(TileType::Rock) => |e: &mut EntityCommands| {
+        (Some(TileType::Rock), None) => |e: &mut EntityCommands| {
             e.insert(TileMarker::new(TileType::Rock));
         },
-        Some(TileType::Empty) => |e: &mut EntityCommands| {
+        (Some(TileType::Empty), None) => |e: &mut EntityCommands| {
             e.insert(TileMarker::new(TileType::Empty));
+        },
+        (Some(TileType::Grass), Some(ItemKind::Plant1)) => |e: &mut EntityCommands| {
+            e.insert((TileMarker::new(TileType::Grass), Pickable::new(ItemKind::Plant1)));
+        },
+        (Some(TileType::Grass), Some(ItemKind::Plant2)) => |e: &mut EntityCommands| {
+            e.insert((TileMarker::new(TileType::Grass), Pickable::new(ItemKind::Plant2)));
+        },
+        (Some(TileType::Grass), Some(ItemKind::Plant3)) => |e: &mut EntityCommands| {
+            e.insert((TileMarker::new(TileType::Grass), Pickable::new(ItemKind::Plant3)));
+        },
+        (Some(TileType::Grass), Some(ItemKind::Plant4)) => |e: &mut EntityCommands| {
+            e.insert((TileMarker::new(TileType::Grass), Pickable::new(ItemKind::Plant4)));
         },
         // Default: no components
         _ => |_: &mut EntityCommands| {},
