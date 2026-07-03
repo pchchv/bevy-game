@@ -1,19 +1,24 @@
 mod map;
 mod state;
 mod config;
+mod camera;
 mod collision;
 mod inventory;
 mod characters;
 
+use bevy::{
+    prelude::*,
+    window::{MonitorSelection, Window, WindowMode, WindowPlugin},
+};
+
 use bevy_procedural_tilemaps::prelude::*;
-use bevy::{prelude::*, window::{Window, WindowPlugin, WindowResolution}};
-use crate::map::generate::{map_pixel_dimensions, setup_generator};
+
+use crate::camera::CameraPlugin;
+use crate::map::generate::setup_generator;
 
 fn main() {
-    let map_size = map_pixel_dimensions();
-
     App::new()
-        .insert_resource(ClearColor(Color::WHITE))
+        .insert_resource(ClearColor(Color::BLACK)) // Line update alert
         .add_plugins(
             DefaultPlugins
                 .set(AssetPlugin {
@@ -22,8 +27,8 @@ fn main() {
                 })
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        resolution: WindowResolution::new(map_size.x as u32, map_size.y as u32),
-                        resizable: false,
+                        title: "Bevy Game".into(),
+                        mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current), // Add this line
                         ..default()
                     }),
                     ..default()
@@ -32,13 +37,10 @@ fn main() {
         )
         .add_plugins(ProcGenSimplePlugin::<Cartesian3D, Sprite>::default())
         .add_plugins(state::StatePlugin)
-        .add_plugins(collision::CollisionPlugin)
+        .add_plugins(CameraPlugin) // Add this line
         .add_plugins(inventory::InventoryPlugin)
+        .add_plugins(collision::CollisionPlugin)
         .add_plugins(characters::CharactersPlugin)
-        .add_systems(Startup, (setup_camera, setup_generator))
+        .add_systems(Startup, setup_generator) // Line update alert - remove setup_camera here
         .run();
-}
-
-fn setup_camera(mut commands: Commands) {
-    commands.spawn(Camera2d);
 }
