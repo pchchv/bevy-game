@@ -15,10 +15,6 @@ const ASSETS_SCALE: Vec3 = Vec3::ONE;
 /// Number of z layers in the map, derived from the default terrain layers.
 const GRID_Z: u32 = 5;
 
-pub fn map_pixel_dimensions() -> Vec2 {
-    Vec2::new(TILE_SIZE * GRID_X as f32, TILE_SIZE * GRID_Y as f32)
-}
-
 pub fn setup_generator(mut commands: Commands, asset_server: Res<AssetServer>, mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>) {
     // 1. Rules Initialization - Get tile definitions and connection rules
     let (assets_definitions, models, socket_collection) = build_world();
