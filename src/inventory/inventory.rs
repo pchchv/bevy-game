@@ -45,3 +45,9 @@ impl Pickable {
         }
     }
 }
+
+/// Resource storing collected items.
+#[derive(Resource, Default, Debug)]
+pub struct Inventory {
+    items: HashMap<ItemKind, u32>,
+}
