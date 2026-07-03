@@ -1,11 +1,11 @@
 /// Player-related configuration
 pub mod player {
     /// Collision radius for the player's collider (in world units)
-    pub const COLLIDER_RADIUS: f32 = 16.0;
+    pub const COLLIDER_RADIUS: f32 = 24.0;
     /// Z-position for player rendering (above terrain, below UI)
     pub const PLAYER_Z_POSITION: f32 = 20.0;
     /// Visual scale of the player sprite
-    pub const PLAYER_SCALE: f32 = 0.8;
+    pub const PLAYER_SCALE: f32 = 1.2;
 }
 
 /// Map/terrain configuration
