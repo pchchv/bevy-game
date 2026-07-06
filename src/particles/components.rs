@@ -34,4 +34,14 @@ impl Particle {
             end_scale: scale * 0.5,  // Default: shrink to half
         }
     }
+
+    pub fn with_angular_velocity(mut self, angular_velocity: f32) -> Self {
+        self.angular_velocity = angular_velocity;
+        self
+    }
+
+    pub fn with_acceleration(mut self, acceleration: Vec3) -> Self {
+        self.acceleration = acceleration;
+        self
+    }
 }
