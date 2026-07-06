@@ -176,3 +176,12 @@ pub fn update_particles(
         }
     }
 }
+
+/// System to clean up inactive emitters that are one-shot
+pub fn cleanup_finished_emitters(mut commands: Commands, emitters: Query<(Entity, &ParticleEmitter)>) {
+    for (entity, emitter) in emitters.iter() {
+        if emitter.one_shot && !emitter.active {
+            commands.entity(entity).despawn();
+        }
+    }
+}
