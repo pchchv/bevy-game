@@ -17,3 +17,21 @@ pub struct Particle {
     pub start_scale: f32,          // Size at birth
     pub end_scale: f32,            // Size at death (usually smaller)
 }
+
+impl Particle {
+    pub fn new(velocity: Vec3, lifetime: f32, scale: f32, start_color: Color) -> Self {
+        Self {
+            velocity,
+            lifetime,
+            max_lifetime: lifetime,
+            scale,
+            angular_velocity: 0.0,
+            acceleration: Vec3::ZERO,
+            start_color,
+            mid_color: start_color,  // Default to same color
+            end_color: start_color,
+            start_scale: scale,
+            end_scale: scale * 0.5,  // Default: shrink to half
+        }
+    }
+}
