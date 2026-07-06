@@ -57,4 +57,9 @@ impl Particle {
         self.end_scale = end_scale;
         self
     }
+
+    /// Returns the normalized lifetime progress (0.0 to 1.0)
+    pub fn progress(&self) -> f32 {
+        1.0 - (self.lifetime / self.max_lifetime)
+    }
 }
