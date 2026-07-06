@@ -106,4 +106,9 @@ impl ParticleEmitter {
             has_spawned: false,
         }
     }
+
+    pub fn one_shot(mut self) -> Self {
+        self.one_shot = true;
+        self
+    }
 }
