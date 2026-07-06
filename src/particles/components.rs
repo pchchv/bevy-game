@@ -83,3 +83,27 @@ impl Particle {
         self.start_scale.lerp(self.end_scale, progress)
     }
 }
+
+/// Configuration for a particle emitter
+#[derive(Component, Clone)]
+pub struct ParticleEmitter {
+    pub spawn_timer: Timer,
+    pub particles_per_spawn: u32,
+    pub particle_config: ParticleConfig,
+    pub active: bool,
+    pub one_shot: bool,
+    pub has_spawned: bool,
+}
+
+impl ParticleEmitter {
+    pub fn new(spawn_rate: f32, particles_per_spawn: u32, particle_config: ParticleConfig) -> Self {
+        Self {
+            spawn_timer: Timer::from_seconds(spawn_rate, TimerMode::Repeating),
+            particles_per_spawn,
+            particle_config,
+            active: true,
+            one_shot: false,
+            has_spawned: false,
+        }
+    }
+}
