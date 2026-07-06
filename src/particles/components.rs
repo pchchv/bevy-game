@@ -62,4 +62,24 @@ impl Particle {
     pub fn progress(&self) -> f32 {
         1.0 - (self.lifetime / self.max_lifetime)
     }
+    
+    /// Get interpolated color based on lifetime progress
+    pub fn current_color(&self) -> Color {
+        let progress = self.progress();
+        if progress < 0.5 {
+            // First half: start → mid
+            let t = progress * 2.0;  // Remap 0.0-0.5 to 0.0-1.0
+            self.start_color.mix(&self.mid_color, t)
+        } else {
+            // Second half: mid → end
+            let t = (progress - 0.5) * 2.0;  // Remap 0.5-1.0 to 0.0-1.0
+            self.mid_color.mix(&self.end_color, t)
+        }
+    }
+    
+    /// Get interpolated scale based on lifetime progress
+    pub fn current_scale(&self) -> f32 {
+        let progress = self.progress();
+        self.start_scale.lerp(self.end_scale, progress)
+    }
 }
