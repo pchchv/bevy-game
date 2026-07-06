@@ -126,3 +126,10 @@ pub fn spawn_particle(
         Transform::from_translation(position),
     ));
 }
+
+/// Rotate a 2D vector by an angle (in radians)
+fn rotate_vector_2d(vec: Vec3, angle: f32) -> Vec3 {
+    let cos = angle.cos();
+    let sin = angle.sin();
+    Vec3::new(vec.x * cos - vec.y * sin, vec.x * sin + vec.y * cos, vec.z)
+}
