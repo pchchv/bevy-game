@@ -139,3 +139,40 @@ fn apply_direction_variance(direction: Vec3, variance: f32, rng: &mut rand::rngs
     let angle = rng.gen_range(-variance..variance);
     rotate_vector_2d(direction, angle)
 }
+
+/// System to update particle lifetime and properties
+pub fn update_particles(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut particles: Query<(
+        Entity,
+        &mut Particle,
+        &mut Transform,
+        &MeshMaterial2d<ParticleMaterial>,
+    )>,
+    mut materials: ResMut<Assets<ParticleMaterial>>,
+) {
+    for (entity, mut particle, mut transform, material_handle) in particles.iter_mut() {
+        particle.lifetime -= time.delta_secs();
+        if particle.lifetime <= 0.0 {
+            commands.entity(entity).despawn();
+            continue;
+        }
+
+        // Update position
+        let acceleration = particle.acceleration;
+        particle.velocity += acceleration * time.delta_secs();
+        transform.translation += particle.velocity * time.delta_secs();
+        // Update rotation
+        transform.rotate_z(particle.angular_velocity * time.delta_secs());
+        // Apply color curve interpolation
+        let current_color = particle.current_color();
+        // Apply scale curve interpolation
+        let current_scale = particle.current_scale();
+        transform.scale = Vec3::splat(current_scale);
+        // Update material color
+        if let Some(mut material) = materials.get_mut(&material_handle.0) {
+            material.color = current_color.to_linear();
+        }
+    }
+}
