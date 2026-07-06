@@ -44,4 +44,17 @@ impl Particle {
         self.acceleration = acceleration;
         self
     }
+
+    /// Set color curve for smooth color transitions
+    pub fn with_color_curve(mut self, mid: Color, end: Color) -> Self {
+        self.mid_color = mid;
+        self.end_color = end;
+        self
+    }
+
+    /// Set scale curve
+    pub fn with_scale_curve(mut self, end_scale: f32) -> Self {
+        self.end_scale = end_scale;
+        self
+    }
 }
