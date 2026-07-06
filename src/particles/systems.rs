@@ -133,3 +133,9 @@ fn rotate_vector_2d(vec: Vec3, angle: f32) -> Vec3 {
     let sin = angle.sin();
     Vec3::new(vec.x * cos - vec.y * sin, vec.x * sin + vec.y * cos, vec.z)
 }
+
+/// Apply directional variance to a vector
+fn apply_direction_variance(direction: Vec3, variance: f32, rng: &mut rand::rngs::ThreadRng) -> Vec3 {
+    let angle = rng.gen_range(-variance..variance);
+    rotate_vector_2d(direction, angle)
+}
