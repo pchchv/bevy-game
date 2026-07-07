@@ -7,6 +7,7 @@ use crate::characters::physics::Velocity;
 use crate::characters::facing::Facing;
 use crate::characters::collider::Collider;
 use crate::config::player::{PLAYER_SCALE, PLAYER_Z_POSITION};
+use crate::combat::PlayerCombat;
 
 #[derive(Resource, Default)]
 pub struct CurrentCharacterIndex {
@@ -87,6 +88,7 @@ pub fn initialize_player_character(
             Velocity::default(),
             Facing::default(),
             Collider::default(),
+            PlayerCombat::default(),
             AnimationTimer(Timer::from_seconds(DEFAULT_ANIMATION_FRAME_TIME, TimerMode::Repeating)),
             character_entry.clone(),
             sprite,
