@@ -73,3 +73,27 @@ fn facing_to_vec3(facing: &Facing) -> Vec3 {
         Facing::Down => Vec3::NEG_Y,
     }
 }
+
+/// Switch powers with number keys (for testing)
+pub fn debug_switch_power(input: Res<ButtonInput<KeyCode>>, mut player_query: Query<&mut PlayerCombat, With<Player>>) {
+    let Ok(mut combat) = player_query.single_mut() else {
+        return;
+    };
+
+    let new_power = if input.just_pressed(KeyCode::Digit1) {
+        Some(PowerType::Fire)
+    } else if input.just_pressed(KeyCode::Digit2) {
+        Some(PowerType::Arcane)
+    } else if input.just_pressed(KeyCode::Digit3) {
+        Some(PowerType::Shadow)
+    } else if input.just_pressed(KeyCode::Digit4) {
+        Some(PowerType::Poison)
+    } else {
+        None
+    };
+
+    if let Some(power) = new_power {
+        combat.power_type = power;
+        info!("Switched to {:?}", power);
+    }
+}
