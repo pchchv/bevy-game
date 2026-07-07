@@ -64,3 +64,12 @@ fn spawn_projectile(commands: &mut Commands, position: Vec3, power_type: PowerTy
         ));
     }
 }
+
+fn facing_to_vec3(facing: &Facing) -> Vec3 {
+    match facing {
+        Facing::Right => Vec3::X,
+        Facing::Left => Vec3::NEG_X,
+        Facing::Up => Vec3::Y,
+        Facing::Down => Vec3::NEG_Y,
+    }
+}
