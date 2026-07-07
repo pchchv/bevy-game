@@ -24,3 +24,13 @@ impl ParticleMaterial {
         }
     }
 }
+
+impl Material2d for ParticleMaterial {
+    fn fragment_shader() -> ShaderRef {
+        "shaders/particle_glow.wgsl".into()
+    }
+
+    fn alpha_mode(&self) -> AlphaMode2d {
+        AlphaMode2d::Blend
+    }
+}
