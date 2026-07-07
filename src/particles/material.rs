@@ -33,4 +33,32 @@ impl Material2d for ParticleMaterial {
     fn alpha_mode(&self) -> AlphaMode2d {
         AlphaMode2d::Blend
     }
+
+    fn specialize(
+        descriptor: &mut RenderPipelineDescriptor,
+        _layout: &MeshVertexBufferLayoutRef,
+        _key: Material2dKey<Self>,
+    ) -> Result<(), SpecializedMeshPipelineError> {
+        // Set up additive blending for glowing effect
+        if let Some(fragment) = &mut descriptor.fragment {
+            if let Some(target) = fragment.targets.first_mut() {
+                if let Some(target_state) = target.as_mut() {
+                    target_state.blend = Some(BlendState {
+                        color: BlendComponent {
+                            src_factor: BlendFactor::SrcAlpha,
+                            dst_factor: BlendFactor::One, // Additive!
+                            operation: BlendOperation::Add,
+                        },
+                        alpha: BlendComponent {
+                            src_factor: BlendFactor::One,
+                            dst_factor: BlendFactor::One,
+                            operation: BlendOperation::Add,
+                        },
+                    });
+                    target_state.write_mask = ColorWrites::ALL;
+                }
+            }
+        }
+        Ok(())
+    }
 }
