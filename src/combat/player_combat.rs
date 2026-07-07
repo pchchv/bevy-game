@@ -24,4 +24,9 @@ impl PlayerCombat {
             cooldown: Timer::from_seconds(0.5, TimerMode::Once),
         }
     }
+
+    pub fn with_cooldown(mut self, seconds: f32) -> Self {
+        self.cooldown = Timer::from_seconds(seconds, TimerMode::Once);
+        self
+    }
 }
