@@ -19,3 +19,15 @@ pub struct PowerVisuals {
     pub particles_per_spawn: u32,
     pub core_particles_per_spawn: u32,
 }
+
+impl PowerType {
+    /// Get visual configuration for this power
+    pub fn visuals(&self, direction: Vec3) -> PowerVisuals {
+        match self {
+            PowerType::Fire => Self::fire_visuals(direction),
+            PowerType::Arcane => Self::arcane_visuals(direction),
+            PowerType::Shadow => Self::shadow_visuals(direction),
+            PowerType::Poison => Self::poison_visuals(direction),
+        }
+    }
+}
