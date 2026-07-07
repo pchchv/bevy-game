@@ -42,3 +42,25 @@ pub fn handle_power_input(
 
     info!("{:?} projectile fired!", combat.power_type);
 }
+
+fn spawn_projectile(commands: &mut Commands, position: Vec3, power_type: PowerType, visuals: &PowerVisuals) {
+    // Primary particles
+    let primary_emitter = ParticleEmitter::new(0.016, visuals.particles_per_spawn, visuals.primary.clone()).one_shot();
+    commands.spawn((
+        primary_emitter,
+        Transform::from_translation(position),
+        GlobalTransform::from(Transform::from_translation(position)),
+        ProjectileEffect { power_type },
+    ));
+
+    // Core particles (if the power has a core)
+    if let Some(ref core_config) = visuals.core {
+        let core_emitter = ParticleEmitter::new(0.016, visuals.core_particles_per_spawn, core_config.clone()).one_shot();
+        commands.spawn((
+            core_emitter,
+            Transform::from_translation(position),
+            GlobalTransform::from(Transform::from_translation(position)),
+            ProjectileEffect { power_type },
+        ));
+    }
+}
