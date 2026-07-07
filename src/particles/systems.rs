@@ -1,7 +1,7 @@
-use super::components::*;
 use super::material::ParticleMaterial;
+use super::components::*;
 use bevy::prelude::*;
-use rand::Rng;
+use rand::RngExt;
 
 /// System to update particle emitters and spawn new particles
 pub fn update_emitters(
@@ -11,7 +11,7 @@ pub fn update_emitters(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ParticleMaterial>>,
 ) {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     for (entity, mut emitter, global_transform) in emitters.iter_mut() {
         if !emitter.active {
             continue;
@@ -59,10 +59,10 @@ pub fn spawn_particle(
     _particle_index: u32,
 ) {
     // Calculate randomized values
-    let lifetime = config.lifetime + rng.gen_range(-config.lifetime_variance..config.lifetime_variance);
-    let speed = config.speed + rng.gen_range(-config.speed_variance..config.speed_variance);
-    let scale = config.scale + rng.gen_range(-config.scale_variance..config.scale_variance);
-    let angular_velocity = config.angular_velocity + rng.gen_range(-config.angular_velocity_variance..config.angular_velocity_variance);
+    let lifetime = config.lifetime + rng.random_range(-config.lifetime_variance..config.lifetime_variance);
+    let speed = config.speed + rng.random_range(-config.speed_variance..config.speed_variance);
+    let scale = config.scale + rng.random_range(-config.scale_variance..config.scale_variance);
+    let angular_velocity = config.angular_velocity + rng.random_range(-config.angular_velocity_variance..config.angular_velocity_variance);
     // Calculate direction with variance
     let base_direction = config.direction.normalize_or_zero();
     let direction = if config.direction_variance > 0.0 {
@@ -75,14 +75,14 @@ pub fn spawn_particle(
     let emission_offset = match config.emission_shape {
         EmissionShape::Point => Vec3::ZERO,
         EmissionShape::Circle { radius } => {
-            let angle = rng.gen_range(0.0..std::f32::consts::TAU);
-            let distance = rng.gen_range(0.0..radius);
+            let angle = rng.random_range(0.0..std::f32::consts::TAU);
+            let distance = rng.random_range(0.0..radius);
             Vec3::new(angle.cos() * distance, angle.sin() * distance, 0.0)
         }
         EmissionShape::Cone { angle } => {
-            let cone_angle = rng.gen_range(-angle..angle);
+            let cone_angle = rng.random_range(-angle..angle);
             let rotated = rotate_vector_2d(base_direction, cone_angle);
-            rotated * rng.gen_range(0.0..1.0)
+            rotated * rng.random_range(0.0..1.0)
         }
     };
 
@@ -136,7 +136,7 @@ fn rotate_vector_2d(vec: Vec3, angle: f32) -> Vec3 {
 
 /// Apply directional variance to a vector
 fn apply_direction_variance(direction: Vec3, variance: f32, rng: &mut rand::rngs::ThreadRng) -> Vec3 {
-    let angle = rng.gen_range(-variance..variance);
+    let angle = rng.random_range(-variance..variance);
     rotate_vector_2d(direction, angle)
 }
 
