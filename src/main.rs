@@ -2,8 +2,10 @@ mod map;
 mod state;
 mod config;
 mod camera;
+mod combat;
 mod collision;
 mod inventory;
+mod particles;
 mod characters;
 
 use bevy::{
@@ -18,7 +20,7 @@ use crate::map::generate::setup_generator;
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::BLACK)) // Line update alert
+        .insert_resource(ClearColor(Color::BLACK))
         .add_plugins(
             DefaultPlugins
                 .set(AssetPlugin {
@@ -28,7 +30,7 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: "Bevy Game".into(),
-                        mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current), // Add this line
+                        mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current),
                         ..default()
                     }),
                     ..default()
@@ -37,10 +39,12 @@ fn main() {
         )
         .add_plugins(ProcGenSimplePlugin::<Cartesian3D, Sprite>::default())
         .add_plugins(state::StatePlugin)
-        .add_plugins(CameraPlugin) // Add this line
+        .add_plugins(CameraPlugin)
         .add_plugins(inventory::InventoryPlugin)
         .add_plugins(collision::CollisionPlugin)
         .add_plugins(characters::CharactersPlugin)
-        .add_systems(Startup, setup_generator) // Line update alert - remove setup_camera here
+        .add_plugins(particles::ParticlesPlugin)
+        .add_plugins(combat::CombatPlugin)
+        .add_systems(Startup, setup_generator)
         .run();
 }
