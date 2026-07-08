@@ -54,3 +54,14 @@ impl AIBehavior {
         }
     }
 }
+
+/// Cached path for enemy navigation
+#[derive(Component, Default)]
+pub struct EnemyPath {
+    /// Waypoints in world coordinates
+    pub waypoints: Vec<Vec2>,
+    /// Current waypoint index
+    pub current_index: usize,
+    /// Timer for path recalculation
+    pub recalc_timer: f32,
+}
