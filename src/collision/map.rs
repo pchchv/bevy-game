@@ -282,4 +282,44 @@ impl CollisionMap {
             path.into_iter().map(|p| self.grid_to_world(p.x, p.y)).collect()
         })
     }
+    
+    /// Find nearest walkable cell
+    pub fn find_nearest_walkable(&self, pos: IVec2) -> Option<IVec2> {
+        for radius in 1i32..10 {
+            for dx in -radius..=radius {
+                for dy in -radius..=radius {
+                    if dx.abs() == radius || dy.abs() == radius {
+                        let check = IVec2::new(pos.x + dx, pos.y + dy);
+                        if self.is_walkable(check.x, check.y) {
+                            return Some(check);
+                        }
+                    }
+                }
+            }
+        }
+        None
+    }
+
+    /// Find nearest position where a circle of the given radius is fully clear.
+    /// Searches expanding rings up to 20 tiles from the given world position.
+    /// Returns a world-space position (tile center) or None if nothing found.
+    pub fn find_nearest_clear_position(&self, world_pos: Vec2, radius: f32) -> Option<Vec2> {
+        let grid_pos = self.world_to_grid(world_pos);
+        for ring in 0i32..20 {
+            for dx in -ring..=ring {
+                for dy in -ring..=ring {
+                    if ring > 0 && dx.abs() != ring && dy.abs() != ring {
+                        continue; // Only check the ring perimeter
+                    }
+                    
+                    let candidate_grid = IVec2::new(grid_pos.x + dx, grid_pos.y + dy);
+                    let candidate_world = self.grid_to_world(candidate_grid.x, candidate_grid.y);
+                    if self.is_circle_clear(candidate_world, radius) {
+                        return Some(candidate_world);
+                    }
+                }
+            }
+        }
+        None
+    }
 }
