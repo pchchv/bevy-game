@@ -65,3 +65,16 @@ pub struct EnemyPath {
     /// Timer for path recalculation
     pub recalc_timer: f32,
 }
+
+impl EnemyPath {
+    /// Get current waypoint position
+    pub fn current_waypoint(&self) -> Option<Vec2> {
+        self.waypoints.get(self.current_index).copied()
+    }
+    
+    /// Advance to next waypoint, returns true if path completed
+    pub fn advance(&mut self) -> bool {
+        self.current_index += 1;
+        self.current_index >= self.waypoints.len()
+    }
+}
