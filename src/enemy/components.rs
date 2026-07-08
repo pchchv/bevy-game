@@ -29,3 +29,28 @@ impl EnemyCombat {
         }
     }
 }
+
+/// AI behavior state for enemies
+#[derive(Component)]
+pub struct AIBehavior {
+    pub attack_range: f32,
+    pub detection_range: f32,
+}
+
+impl Default for AIBehavior {
+    fn default() -> Self {
+        Self {
+            attack_range: 150.0,    // Stop and attack within this range
+            detection_range: 500.0, // Start following player within this range
+        }
+    }
+}
+
+impl AIBehavior {
+    pub fn new(attack_range: f32, detection_range: f32) -> Self {
+        Self {
+            attack_range,
+            detection_range,
+        }
+    }
+}
