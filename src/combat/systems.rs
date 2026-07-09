@@ -43,7 +43,7 @@ pub fn handle_power_input(
     info!("{:?} projectile fired!", combat.power_type);
 }
 
-fn spawn_projectile(commands: &mut Commands, position: Vec3, power_type: PowerType, visuals: &PowerVisuals) {
+pub fn spawn_projectile(commands: &mut Commands, position: Vec3, power_type: PowerType, visuals: &PowerVisuals) {
     // Primary particles
     let primary_emitter = ParticleEmitter::new(0.016, visuals.particles_per_spawn, visuals.primary.clone()).one_shot();
     commands.spawn((

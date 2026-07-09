@@ -1,10 +1,10 @@
 mod player_combat;
 mod power_type;
-mod systems;
+pub mod systems;
 
 pub use player_combat::PlayerCombat;
 pub use power_type::{PowerType, PowerVisuals};
-pub use systems::{ProjectileEffect, debug_switch_power, handle_power_input};
+pub use systems::{debug_switch_power, handle_power_input, spawn_projectile};
 
 use bevy::prelude::*;
 
