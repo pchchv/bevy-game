@@ -68,3 +68,24 @@ pub fn spawn_enemy(
 
     Some(entity)
 }
+
+/// Validate and adjust spawn position to ensure it's on a walkable tile.
+fn get_valid_spawn_position(collision_map: &CollisionMap, desired_pos: Vec2) -> Vec2 {
+    // Use the same radius as the runtime collision system
+    if collision_map.is_circle_clear(desired_pos, COLLIDER_RADIUS) {
+        return desired_pos;
+    }
+
+    // Find nearest position where the full collider circle is clear
+    if let Some(clear_pos) = collision_map.find_nearest_clear_position(desired_pos, COLLIDER_RADIUS) {
+        info!(
+            "Adjusted spawn from {:?} to {:?} (was on obstacle)",
+            desired_pos, clear_pos
+        );
+        return clear_pos;
+    }
+
+    // Fallback to original (shouldn't happen in a valid map)
+    warn!("Could not find walkable spawn position near {:?}", desired_pos);
+    desired_pos
+}
