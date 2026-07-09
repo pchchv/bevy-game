@@ -1,10 +1,13 @@
 use bevy::prelude::*;
 use crate::combat::PlayerCombat;
+use crate::collision::CollisionMap;
 use crate::characters::animation::*;
 use crate::characters::input::Player;
 use crate::characters::facing::Facing;
+use crate::collision::CollisionMapBuilt;
 use crate::characters::physics::Velocity;
 use crate::characters::collider::Collider;
+use crate::config::player::COLLIDER_RADIUS;
 use crate::characters::state::CharacterState;
 use crate::config::player::{PLAYER_SCALE, PLAYER_Z_POSITION};
 use crate::characters::config::{CharacterEntry, CharactersList};
@@ -91,4 +94,40 @@ pub fn switch_character(
             index: 0,
         },
     );
+}
+
+/// Get a valid spawn position, checking collision map and adjusting if needed.
+fn get_valid_spawn_position(collision_map: &CollisionMap, desired_pos: Vec2) -> Vec2 {
+    // Use the same radius as the runtime collision system
+    if collision_map.is_circle_clear(desired_pos, COLLIDER_RADIUS) {
+        return desired_pos;
+    }
+
+    // Find nearest position where the full collider circle is clear
+    if let Some(clear_pos) = collision_map.find_nearest_clear_position(desired_pos, COLLIDER_RADIUS) {
+        info!(
+            "Adjusted player spawn from {:?} to {:?} (was on obstacle)",
+            desired_pos, clear_pos
+        );
+        return clear_pos;
+    }
+
+    // Fallback to original
+    warn!("Could not find walkable spawn position near {:?}", desired_pos);
+    desired_pos
+}
+
+/// Load character assets at startup (before collision map is built).
+pub fn load_character_assets(mut commands: Commands, asset_server: Res<AssetServer>, mut character_index: ResMut<CurrentCharacterIndex>) {
+    // Load the characters list
+    let characters_list_handle: Handle<CharactersList> = asset_server.load("characters/characters.ron");
+    // Store the handle in a resource
+    commands.insert_resource(CharactersListResource {
+        handle: characters_list_handle,
+    });
+
+    // Initialize with first character
+    character_index.index = 0;
+    
+    info!("Character assets loading started");
 }
