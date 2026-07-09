@@ -131,3 +131,65 @@ pub fn load_character_assets(mut commands: Commands, asset_server: Res<AssetServ
     
     info!("Character assets loading started");
 }
+
+/// Spawn player at a valid position AFTER collision map is built.
+pub fn spawn_player_at_valid_position(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    characters_lists: Res<Assets<CharactersList>>,
+    character_index: Res<CurrentCharacterIndex>,
+    characters_list_res: Option<Res<CharactersListResource>>,
+    collision_map: Option<Res<CollisionMap>>,
+    mut player_spawned: ResMut<PlayerSpawned>,
+) {
+    // Wait for collision map
+    let Some(collision_map) = collision_map else {
+        return;
+    };
+    
+    // Wait for character list resource
+    let Some(characters_list_res) = characters_list_res else {
+        return;
+    };
+    
+    // Get the character list asset
+    let Some(characters_list) = characters_lists.get(&characters_list_res.handle) else {
+        return;
+    };
+    
+    if character_index.index >= characters_list.characters.len() {
+        warn!("Invalid character index: {}", character_index.index);
+        return;
+    }
+    
+    let character_entry = &characters_list.characters[character_index.index];
+    // Calculate valid spawn position
+    let desired_pos = Vec2::new(0.0, 0.0);
+    let valid_pos = get_valid_spawn_position(&collision_map, desired_pos);
+    // Create sprite
+    let texture = asset_server.load(&character_entry.texture_path);
+    let layout = create_character_atlas_layout(&mut atlas_layouts, character_entry);
+    let sprite = Sprite::from_atlas_image(texture, TextureAtlas { layout, index: 0 });
+    // Spawn player with all components at valid position
+    commands.spawn((
+        Player,
+        Transform::from_translation(Vec3::new(valid_pos.x, valid_pos.y, PLAYER_Z_POSITION)).with_scale(Vec3::splat(PLAYER_SCALE)),
+        sprite,
+        AnimationController::default(),
+        CharacterState::default(),
+        Velocity::default(),
+        Facing::default(),
+        Collider::default(),
+        PlayerCombat::default(),
+        AnimationTimer(Timer::from_seconds(
+            DEFAULT_ANIMATION_FRAME_TIME,
+            TimerMode::Repeating,
+        )),
+        character_entry.clone(),
+    ));
+    
+    // Mark player as spawned
+    player_spawned.0 = true;
+    info!("Player spawned at validated position {:?}", valid_pos);
+}
