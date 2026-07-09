@@ -13,6 +13,10 @@ use crate::characters::{
     state::CharacterState,
 };
 
+/// Resource to track if enemies have been spawned.
+#[derive(Resource, Default, PartialEq, Eq)]
+pub struct EnemiesSpawned(pub bool);
+
 /// Spawn an enemy at the given position.
 pub fn spawn_enemy(
     commands: &mut Commands,
