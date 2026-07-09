@@ -17,10 +17,7 @@ impl Plugin for StatePlugin {
             // Loading state systems
             .add_systems(OnEnter(GameState::Loading), loading::spawn_loading_screen)
             .add_systems(Update, (check_assets_loaded, loading::animate_loading).run_if(in_state(GameState::Loading)))
-            .add_systems(OnExit(GameState::Loading), (
-                loading::despawn_loading_screen,
-                crate::characters::spawn::initialize_player_character,
-            ))
+            .add_systems(OnExit(GameState::Loading), loading::despawn_loading_screen)
             // Pause state systems
             .add_systems(OnEnter(GameState::Paused), pause::spawn_pause_menu)
             .add_systems(OnExit(GameState::Paused), pause::despawn_pause_menu)
