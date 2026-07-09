@@ -41,7 +41,7 @@ impl Plugin for CharactersPlugin {
                     animation::on_state_change_update_animation,
                     collider::validate_movement,
                     physics::apply_velocity,
-                    rendering::update_player_depth,
+                    rendering::update_character_depth,
                     animation::animations_playback,
                 )
                     .chain()
