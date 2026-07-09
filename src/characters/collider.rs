@@ -60,3 +60,47 @@ pub fn validate_movement(map: Option<Res<CollisionMap>>, time: Res<Time>, mut qu
         }
     }
 }
+
+/// Resolve collisions between entities (player and enemies).
+/// Prevents entities from moving into each other.
+pub fn resolve_entity_collisions(mut query: Query<(Entity, &Transform, &mut Velocity, &Collider)>) {
+    // Collect all entity positions first to avoid multiple mutable borrows
+    let entities: Vec<_> = query
+        .iter()
+        .map(|(e, t, _, c)| (e, c.world_position(t), c.radius))
+        .collect();
+    // Check each entity against all others
+    for (entity, transform, mut velocity, collider) in query.iter_mut() {
+        // Skip if not moving
+        if !velocity.is_moving() {
+            continue;
+        }
+
+        let pos = collider.world_position(transform);
+        let radius = collider.radius;
+        for &(other_entity, other_pos, other_radius) in &entities {
+            // Skip self
+            if entity == other_entity {
+                continue;
+            }
+
+            let delta = other_pos - pos;
+            let distance = delta.length();
+            let min_distance = radius + other_radius;
+            // Check if entities are overlapping or very close
+            if distance < min_distance * 1.1 {
+                // Calculate the direction toward the other entity
+                if distance > 0.01 {
+                    let direction = delta / distance;
+                    // Project velocity onto the direction toward the other entity
+                    let velocity_toward = velocity.0.dot(direction);
+                    // If moving toward the other entity, block that movement
+                    if velocity_toward > 0.0 {
+                        // Remove the component of velocity moving toward the other entity
+                        velocity.0 -= direction * velocity_toward;
+                    }
+                }
+            }
+        }
+    }
+}
