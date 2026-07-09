@@ -19,6 +19,9 @@ pub struct CharactersListResource {
     pub handle: Handle<CharactersList>,
 }
 
+#[derive(Resource, Default, PartialEq, Eq)]
+pub struct PlayerSpawned(pub bool);
+
 /// Create a texture atlas layout for a character
 fn create_character_atlas_layout(atlas_layouts: &mut ResMut<Assets<TextureAtlasLayout>>, character_entry: &CharacterEntry) -> Handle<TextureAtlasLayout> {
     let max_row = character_entry.calculate_max_animation_row();
@@ -30,7 +33,6 @@ fn create_character_atlas_layout(atlas_layouts: &mut ResMut<Assets<TextureAtlasL
         None,
     ))
 }
-
 
 pub fn switch_character(
     input: Res<ButtonInput<KeyCode>>,
