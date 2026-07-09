@@ -93,3 +93,45 @@ fn get_valid_spawn_position(collision_map: &CollisionMap, desired_pos: Vec2) -> 
     warn!("Could not find walkable spawn position near {:?}", desired_pos);
     desired_pos
 }
+
+/// System to spawn test enemies when collision map is ready.
+pub fn spawn_test_enemies(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    characters_lists: Res<Assets<CharactersList>>,
+    characters_list_res: Option<Res<CharactersListResource>>,
+    collision_map: Option<Res<CollisionMap>>,
+    mut enemies_spawned: ResMut<EnemiesSpawned>,
+) {
+    // Wait for collision map
+    let Some(collision_map) = collision_map else {
+        return;
+    };
+    // Wait for character list resource
+    let Some(characters_list_res) = characters_list_res else {
+        return;
+    };
+    // Get the character list asset
+    let Some(characters_list) = characters_lists.get(&characters_list_res.handle) else {
+        return;
+    };
+    // Define desired spawn positions
+    let spawn_positions = [Vec2::new(200.0, 0.0), Vec2::new(-200.0, 100.0)];
+    for desired_pos in spawn_positions {
+        // Validate position against collision map
+        let valid_pos = get_valid_spawn_position(&collision_map, desired_pos);
+        spawn_enemy(
+            &mut commands,
+            &asset_server,
+            &mut atlas_layouts,
+            characters_list,
+            Vec3::new(valid_pos.x, valid_pos.y, ENEMY_Z_POSITION),
+            "graveyard_reaper",
+        );
+    }
+
+    // Mark enemies as spawned so this system doesn't run again
+    enemies_spawned.0 = true;
+    info!("Enemies spawned with validated positions");
+}
