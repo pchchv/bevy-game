@@ -40,6 +40,7 @@ impl Plugin for CharactersPlugin {
                     input::update_jump_state,
                     animation::on_state_change_update_animation,
                     collider::validate_movement,
+                    collider::resolve_entity_collisions,
                     physics::apply_velocity,
                     rendering::update_character_depth,
                     animation::animations_playback,
