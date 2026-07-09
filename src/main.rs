@@ -1,4 +1,5 @@
 mod map;
+mod enemy;
 mod state;
 mod config;
 mod camera;
@@ -45,6 +46,7 @@ fn main() {
         .add_plugins(characters::CharactersPlugin)
         .add_plugins(particles::ParticlesPlugin)
         .add_plugins(combat::CombatPlugin)
+        .add_plugins(enemy::EnemyPlugin)
         .add_systems(Startup, setup_generator)
         .run();
 }
