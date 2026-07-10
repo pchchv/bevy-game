@@ -7,9 +7,8 @@ use crate::characters::facing::Facing;
 use crate::collision::CollisionMapBuilt;
 use crate::characters::physics::Velocity;
 use crate::characters::collider::Collider;
-use crate::config::player::COLLIDER_RADIUS;
 use crate::characters::state::CharacterState;
-use crate::config::player::{PLAYER_SCALE, PLAYER_Z_POSITION};
+use crate::config::player::{COLLIDER_RADIUS, PLAYER_SCALE, PLAYER_Z_POSITION};
 use crate::characters::config::{CharacterEntry, CharactersList};
 
 #[derive(Resource, Default)]
@@ -96,14 +95,12 @@ pub fn switch_character(
     );
 }
 
-/// Get a valid spawn position, checking collision map and adjusting if needed.
+/// Get a valid spawn position, checking collision map and adjusting if needed
 fn get_valid_spawn_position(collision_map: &CollisionMap, desired_pos: Vec2) -> Vec2 {
-    // Use the same radius as the runtime collision system
     if collision_map.is_circle_clear(desired_pos, COLLIDER_RADIUS) {
         return desired_pos;
     }
 
-    // Find nearest position where the full collider circle is clear
     if let Some(clear_pos) = collision_map.find_nearest_clear_position(desired_pos, COLLIDER_RADIUS) {
         info!(
             "Adjusted player spawn from {:?} to {:?} (was on obstacle)",
@@ -112,7 +109,6 @@ fn get_valid_spawn_position(collision_map: &CollisionMap, desired_pos: Vec2) -> 
         return clear_pos;
     }
 
-    // Fallback to original
     warn!("Could not find walkable spawn position near {:?}", desired_pos);
     desired_pos
 }

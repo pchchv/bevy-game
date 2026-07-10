@@ -28,7 +28,7 @@ pub fn spawn_loading_screen(mut commands: Commands) {
             TextColor(Color::WHITE),
         ));
     });
-    
+
     info!("Loading screen spawned");
 }
 
@@ -43,6 +43,6 @@ pub fn despawn_loading_screen(mut commands: Commands, query: Query<Entity, With<
     for entity in query.iter() {
         commands.entity(entity).despawn();
     }
-    
+
     info!("Loading screen despawned");
 }

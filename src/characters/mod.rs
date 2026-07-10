@@ -27,9 +27,9 @@ impl Plugin for CharactersPlugin {
             // Spawn player at valid position AFTER collision map is built
             .add_systems(
                 Update,
-                spawn::spawn_player_at_valid_position 
+                spawn::spawn_player_at_valid_position
                     .run_if(resource_equals(CollisionMapBuilt(true)))
-                    .run_if(resource_equals(PlayerSpawned(false))) 
+                    .run_if(resource_equals(PlayerSpawned(false)))
                     .run_if(in_state(GameState::Playing)),
             )
             .add_systems(

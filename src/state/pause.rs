@@ -25,7 +25,7 @@ pub fn spawn_pause_menu(mut commands: Commands) {
             TextLayout::justify(Justify::Center),
         ));
     });
-    
+
     info!("Pause menu spawned");
 }
 
@@ -33,6 +33,6 @@ pub fn despawn_pause_menu(mut commands: Commands, query: Query<Entity, With<Paus
     for entity in query.iter() {
         commands.entity(entity).despawn();
     }
-    
+
     info!("Pause menu despawned");
 }

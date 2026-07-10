@@ -6,6 +6,7 @@ use crate::config::player::{COLLIDER_RADIUS};
 /// A circular collider for collision detection.
 /// 
 /// The collider position is offset from the entity's transform,
+/// typically to represent the character's feet position.
 #[derive(Component, Debug, Clone)]
 pub struct Collider {
     /// Radius of the circular collider in world units
@@ -29,6 +30,7 @@ impl Collider {
         transform.translation.truncate() + self.offset
     }
 }
+
 /// System that validates movement against the collision map.
 /// 
 /// Runs after input (which sets velocity) but before physics (which applies velocity).
