@@ -31,6 +31,15 @@ impl PowerType {
         }
     }
 
+    pub fn damage(&self) -> f32 {
+        match self {
+            PowerType::Fire => 25.0,
+            PowerType::Arcane => 35.0,
+            PowerType::Shadow => 20.0,
+            PowerType::Poison => 15.0,
+        }
+    }
+
     fn fire_visuals(direction: Vec3) -> PowerVisuals {
         PowerVisuals {
             primary: ParticleConfig {
