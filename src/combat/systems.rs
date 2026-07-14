@@ -61,7 +61,7 @@ pub fn handle_power_input(
     info!("{:?} projectile fired!", combat.power_type);
 }
 
-pub fn spawn_projectile(commands: &mut Commands, position: Vec3, power_type: PowerType, visuals: &PowerVisuals) {
+pub fn spawn_projectile(commands: &mut Commands, position: Vec3, power_type: PowerType, visuals: &PowerVisuals, owner: ProjectileOwner) {
     // Primary particles
     let primary_emitter = ParticleEmitter::new(0.016, visuals.particles_per_spawn, visuals.primary.clone()).one_shot();
     commands.spawn((
@@ -81,6 +81,20 @@ pub fn spawn_projectile(commands: &mut Commands, position: Vec3, power_type: Pow
             ProjectileEffect { power_type },
         ));
     }
+
+    // Hitbox: invisible entity that moves and checks for hits
+    let direction = visuals.primary.direction.normalize_or_zero();
+    let speed = visuals.primary.speed;
+    commands.spawn((
+        Projectile {
+            velocity: direction * speed,
+            lifetime: 2.0,
+            power_type,
+            owner,
+            radius: power_type.hitbox_radius(),
+        },
+        Transform::from_translation(position),
+    ));
 }
 
 fn facing_to_vec3(facing: &Facing) -> Vec3 {
