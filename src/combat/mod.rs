@@ -24,6 +24,8 @@ impl Plugin for CombatPlugin {
                 (
                     handle_power_input,
                     debug_switch_power,
+                    systems::move_projectiles, 
+                    systems::check_projectile_hits,
                     healthbar::spawn_healthbars,
                     healthbar::update_healthbars,
                 )
