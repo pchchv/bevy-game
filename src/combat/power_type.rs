@@ -164,4 +164,14 @@ impl PowerType {
             core_particles_per_spawn: 0,
         }
     }
+
+    /// Hitbox collision radius. Larger for powers that spread visually.
+    pub fn hitbox_radius(&self) -> f32 {
+        match self {
+            PowerType::Fire => 30.0,
+            PowerType::Arcane => 18.0,
+            PowerType::Shadow => 15.0,
+            PowerType::Poison => 25.0,
+        }
+    }
 }
