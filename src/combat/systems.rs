@@ -128,3 +128,34 @@ pub fn move_projectiles(mut commands: Commands, time: Res<Time>, mut projectiles
         transform.translation += proj.velocity * dt;
     }
 }
+
+/// Checks each projectile hitbox against its valid targets; triggers hit events on collision.
+pub fn check_projectile_hits(
+    mut commands: Commands,
+    projectiles: Query<(Entity, &Projectile, &Transform)>,
+    players: Query<(Entity, &GlobalTransform), With<Player>>,
+    enemies: Query<(Entity, &GlobalTransform), With<Enemy>>,
+) {
+    for (proj_entity, proj, proj_transform) in &projectiles {
+        let proj_pos = proj_transform.translation;
+        let hit_target = match proj.owner {
+            ProjectileOwner::Player => enemies
+                .iter()
+                .find(|(_, t)| proj_pos.distance(t.translation()) <= proj.radius)
+                .map(|(e, _)| e),
+            ProjectileOwner::Enemy => players
+                .iter()
+                .find(|(_, t)| proj_pos.distance(t.translation()) <= proj.radius)
+                .map(|(e, _)| e),
+        };
+        if let Some(target) = hit_target {
+            // Trigger hit event instead of directly applying damage
+            commands.trigger(super::events::ProjectileHit {
+                target,
+                damage: proj.power_type.damage(),
+                power_type: proj.power_type,
+            });
+            commands.entity(proj_entity).despawn();
+        }
+    }
+}
