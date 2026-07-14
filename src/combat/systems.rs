@@ -115,3 +115,16 @@ pub fn debug_switch_power(input: Res<ButtonInput<KeyCode>>, mut player_query: Qu
         info!("Switched to {:?}", power);
     }
 }
+
+/// Moves projectile hitboxes forward and despawns them on timeout.
+pub fn move_projectiles(mut commands: Commands, time: Res<Time>, mut projectiles: Query<(Entity, &mut Projectile, &mut Transform)>) {
+    let dt = time.delta_secs();
+    for (entity, mut proj, mut transform) in projectiles.iter_mut() {
+        proj.lifetime -= dt;
+        if proj.lifetime <= 0.0 {
+            commands.entity(entity).despawn();
+            continue;
+        }
+        transform.translation += proj.velocity * dt;
+    }
+}
