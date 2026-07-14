@@ -1,6 +1,9 @@
 mod player_combat;
 mod power_type;
 pub mod systems;
+pub mod health;
+
+pub use health::Health;
 
 pub use player_combat::PlayerCombat;
 pub use power_type::{PowerType, PowerVisuals};
