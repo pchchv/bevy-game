@@ -1,4 +1,12 @@
-// use bevy::prelude::*;
+use bevy::prelude::*;
+use super::health::Health;
+
+const HEALTHBAR_WIDTH: f32 = 50.0;
+const HEALTHBAR_HEIGHT: f32 = 6.0;
+const HEALTHBAR_Y_OFFSET: f32 = 43.0;
+const HEALTHBAR_Z_OFFSET: f32 = 1.0;
+/// Small z bump so the foreground always renders on top of the background.
+const HEALTHBAR_FG_Z_BUMP: f32 = 0.01;
 
 /// Marker: this entity is the colored fill of a healthbar.
 #[derive(Component)]
