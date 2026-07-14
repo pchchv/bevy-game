@@ -3,6 +3,7 @@ use super::components::{AIBehavior, Enemy, EnemyCombat, EnemyPath};
 use crate::config::enemy::{ENEMY_SCALE, ENEMY_Z_POSITION};
 use crate::config::player::COLLIDER_RADIUS;
 use crate::collision::CollisionMap;
+use crate::combat::Health;
 use crate::characters::{
     animation::{AnimationController, AnimationTimer, DEFAULT_ANIMATION_FRAME_TIME},
     collider::Collider,
@@ -58,6 +59,7 @@ pub fn spawn_enemy(
             Facing::default(),
             Collider::default(),
             EnemyCombat::default(),
+            Health::new(character_entry.max_health),
             AIBehavior::default(),
             EnemyPath::default(),  // Add this line
             AnimationTimer(Timer::from_seconds(
