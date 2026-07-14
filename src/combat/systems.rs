@@ -3,12 +3,20 @@ use super::power_type::{PowerType, PowerVisuals};
 use crate::characters::facing::Facing;
 use crate::characters::input::Player;
 use crate::particles::components::ParticleEmitter;
+use crate::enemy::Enemy;
 use bevy::prelude::*;
 
 /// Marker for projectile effects
 #[derive(Component)]
 pub struct ProjectileEffect {
     pub power_type: PowerType,
+}
+
+/// Who fired a projectile determines which entities it can hit.
+#[derive(Component, Clone, Copy)]
+pub enum ProjectileOwner {
+    Player,
+    Enemy,
 }
 
 pub fn handle_power_input(
