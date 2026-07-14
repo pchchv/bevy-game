@@ -1,3 +1,4 @@
+mod events; 
 mod power_type;
 mod player_combat;
 pub mod healthbar;
