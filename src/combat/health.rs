@@ -20,4 +20,17 @@ impl Health {
     pub fn ratio(&self) -> f32 {
         self.current / self.max
     }
+
+    pub fn take_damage(
+        &mut self, 
+        commands: &mut Commands,
+        entity:  Entity,
+        amount: f32
+    ) {
+        self.current = (self.current - amount).max(0.0);
+        // Trigger death event when health reaches zero
+        if !self.is_alive() {
+            commands.trigger(super::events::EntityDeath { entity });
+        }
+    }
 }
