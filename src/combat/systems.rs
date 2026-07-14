@@ -19,6 +19,16 @@ pub enum ProjectileOwner {
     Enemy,
 }
 
+/// Invisible hitbox that travels and checks for collisions.
+#[derive(Component)]
+pub struct Projectile {
+    pub velocity: Vec3,
+    pub lifetime: f32,
+    pub power_type: PowerType,
+    pub owner: ProjectileOwner,
+    pub radius: f32,
+}
+
 pub fn handle_power_input(
     mut commands: Commands,
     input: Res<ButtonInput<KeyCode>>,
