@@ -18,3 +18,47 @@ fn health_color(ratio: f32) -> Color {
         Color::srgb(1.0, t * 0.8, 0.2)
     }
 }
+
+/// Spawns a background + foreground healthbar pair for each entity that gains Health.
+pub fn spawn_healthbars(
+    mut commands: Commands,
+    new_health: Query<(Entity, &GlobalTransform, &Health), Added<Health>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    for (owner, transform, health) in &new_health {
+        let pos = transform.translation();
+        let bg_pos = Vec3::new(
+            pos.x,
+            pos.y + HEALTHBAR_Y_OFFSET,
+            pos.z + HEALTHBAR_Z_OFFSET,
+        );
+        let fg_pos = Vec3::new(
+            pos.x,
+            pos.y + HEALTHBAR_Y_OFFSET,
+            pos.z + HEALTHBAR_Z_OFFSET + HEALTHBAR_FG_Z_BUMP,
+        );
+
+        // Background: dark gray
+        let bg_mesh = meshes.add(Rectangle::new(HEALTHBAR_WIDTH, HEALTHBAR_HEIGHT));
+        let bg_mat = materials.add(ColorMaterial::from(Color::srgb(0.2, 0.2, 0.2)));
+        commands.spawn((
+            Mesh2d(bg_mesh),
+            MeshMaterial2d(bg_mat),
+            Transform::from_translation(bg_pos),
+            HealthBarOwner(owner),
+        ));
+
+        // Foreground: color derived from actual health ratio
+        let ratio = health.ratio();
+        let fg_mesh = meshes.add(Rectangle::new(HEALTHBAR_WIDTH, HEALTHBAR_HEIGHT));
+        let fg_mat = materials.add(ColorMaterial::from(health_color(ratio)));
+        commands.spawn((
+            Mesh2d(fg_mesh),
+            MeshMaterial2d(fg_mat),
+            Transform::from_translation(fg_pos).with_scale(Vec3::new(ratio.max(0.001), 1.0, 1.0)),
+            HealthBarOwner(owner),
+            HealthBarForeground,
+        ));
+    }
+}
