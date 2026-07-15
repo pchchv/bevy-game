@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use super::GameState;
 
 use crate::enemy::Enemy;
 use crate::enemy::spawn::EnemiesSpawned;
@@ -6,6 +7,7 @@ use crate::characters::spawn::PlayerSpawned;
 use crate::combat::healthbar::HealthBarOwner;
 use crate::combat::systems::{Projectile, ProjectileEffect};
 use crate::particles::components::{Particle, ParticleEmitter};
+
 
 #[derive(Component)]
 pub struct GameOverScreen;
@@ -83,4 +85,11 @@ pub fn despawn_game_over_screen(mut commands: Commands, query: Query<Entity, Wit
         commands.entity(entity).despawn();
     }
     info!("Game over screen despawned");
+}
+
+pub fn handle_restart_input(input: Res<ButtonInput<KeyCode>>, mut next_state: ResMut<NextState<GameState>>) {
+    if input.just_pressed(KeyCode::KeyR) {
+        info!("Restarting game...");
+        next_state.set(GameState::Playing);
+    }
 }
