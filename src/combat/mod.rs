@@ -1,4 +1,5 @@
-mod events; 
+mod events;
+mod observers;
 mod power_type;
 mod player_combat;
 pub mod healthbar;
