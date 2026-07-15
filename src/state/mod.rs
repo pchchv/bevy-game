@@ -1,4 +1,5 @@
 mod game_state;
+mod game_over;
 mod loading;
 mod pause;
 
