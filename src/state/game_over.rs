@@ -49,3 +49,38 @@ pub fn cleanup_game_world(
     player_spawned.0 = false;
     enemies_spawned.0 = false;
 }
+
+pub fn spawn_game_over_screen(mut commands: Commands) {
+    commands
+        .spawn((
+            GameOverScreen,
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..default()
+            },
+            BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.85)),
+        ))
+        .with_children(|parent| {
+            parent.spawn((
+                Text::new("GAME OVER\n\nPress R to restart"),
+                TextFont {
+                    font_size: FontSize::Px(48.0),
+                    ..default()
+                },
+                TextColor(Color::WHITE),
+                TextLayout::justify(Justify::Center),
+            ));
+        });
+
+    info!("Game over screen spawned");
+}
+
+pub fn despawn_game_over_screen(mut commands: Commands, query: Query<Entity, With<GameOverScreen>>) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn();
+    }
+    info!("Game over screen despawned");
+}
