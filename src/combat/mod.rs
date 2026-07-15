@@ -9,8 +9,8 @@ pub mod health;
 pub use health::Health;
 
 pub use player_combat::PlayerCombat;
-pub use power_type::{PowerType, PowerVisuals};
-pub use systems::{debug_switch_power, handle_power_input, spawn_projectile};
+pub use power_type::PowerType;
+pub use systems::{debug_switch_power, handle_power_input}; 
 
 use bevy::prelude::*;
 use crate::state::GameState;
@@ -20,6 +20,9 @@ pub struct CombatPlugin;
 impl Plugin for CombatPlugin {
     fn build(&self, app: &mut App) {
         app
+            // Register observers for combat events
+            .add_observer(observers::on_projectile_hit) 
+            .add_observer(observers::on_entity_death) 
             .add_systems(
                 Update,
                 (
