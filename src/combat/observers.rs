@@ -1,6 +1,10 @@
 use bevy::prelude::*;
+
 use super::health::Health;
-use super::events::ProjectileHit;
+use super::events::{EntityDeath, ProjectileHit};
+
+use crate::state::GameState;
+use crate::characters::input::Player;
 
 /// Observer that handles projectile hits by applying damage to the target.
 pub fn on_projectile_hit(hit: On<ProjectileHit>, mut healths: Query<&mut Health>, mut commands: Commands) {
@@ -13,4 +17,16 @@ pub fn on_projectile_hit(hit: On<ProjectileHit>, mut healths: Query<&mut Health>
         "{:?} hit for {} damage! HP: {:.0}/{:.0}",
         hit.power_type, hit.damage, health.current, health.max
     );
+}
+
+/// Observer that handles entity death by despawning the entity.
+pub fn on_entity_death(death: On<EntityDeath>, mut commands: Commands, players: Query<(), With<Player>>, mut next_state: ResMut<NextState<GameState>>) {
+    let entity = death.entity;
+    let is_player = players.get(entity).is_ok();
+    info!("Entity {:?} defeated!", death.entity);
+    commands.entity(death.entity).despawn();
+    if is_player { 
+        info!("Player defeated! Game Over."); 
+        next_state.set(GameState::GameOver);
+    }
 }
