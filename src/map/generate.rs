@@ -36,6 +36,13 @@ pub struct MapSpawnResources {
     grid_template: CartesianGrid<Cartesian3D>,
 }
 
+/// Shared progress counter for the loading screen.
+#[derive(Resource)]
+pub struct MapGenProgress {
+    pub current: Arc<AtomicU32>,
+    pub total: u32,
+}
+
 pub fn setup_generator(mut commands: Commands, asset_server: Res<AssetServer>, mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>) {
     // 1. Rules Initialization - Get tile definitions and connection rules
     let (assets_definitions, models, socket_collection) = build_world();
