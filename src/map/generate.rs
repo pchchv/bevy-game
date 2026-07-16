@@ -273,3 +273,51 @@ fn generate_all_chunks(rules_arc: Arc<Rules<Cartesian3D>>, grid_template: Cartes
     }
     results
 }
+
+fn spawn_chunk_tiles(
+    commands: &mut Commands,
+    grid: &CartesianGrid<Cartesian3D>,
+    spawner: &NodesSpawner<Sprite>,
+    grid_data: &GridData<Cartesian3D, ModelInstance, CartesianGrid<Cartesian3D>>,
+    chunk_offset: Vec3,
+    chunk_x: u32,
+    chunk_y: u32,
+) {
+    for (node_index, instance) in grid_data.iter().enumerate() {
+        let Some(node_assets) = spawner.assets.get(&instance.model_index) else {
+            continue;
+        };
+        let position = grid.pos_from_index(node_index);
+        // The right column and top row are spawned by the next chunk.
+        if position.x == GRID_X - 1 && chunk_x < CHUNKS_X - 1 || position.y == GRID_Y - 1 && chunk_y < CHUNKS_Y - 1 {
+            continue;
+        }
+
+        for asset in node_assets.iter() {
+            let mut local_pos = Vec3::new(
+                asset.world_offset.x + NODE_SIZE.x * (position.x as f32 + asset.grid_offset.dx as f32 + 0.5),
+                asset.world_offset.y + NODE_SIZE.y * (position.y as f32 + asset.grid_offset.dy as f32 + 0.5),
+                asset.world_offset.z + NODE_SIZE.z * (position.z as f32 + asset.grid_offset.dz as f32 + 0.5),
+            );
+
+            // Global z_offset for correct depth sorting across all chunks
+            let global_y = chunk_y * (GRID_Y - 1) + position.y;
+            local_pos.z += NODE_SIZE_Z * (1.0 - global_y as f32 / TOTAL_GRID_Y as f32);
+
+            let world_pos = Vec3::new(
+                chunk_offset.x + local_pos.x,
+                chunk_offset.y + local_pos.y,
+                local_pos.z,
+            );
+            let entity = commands.spawn_empty().id();
+            let entity_commands = &mut commands.entity(entity);
+            asset.assets_bundle.insert_bundle(
+                entity_commands,
+                world_pos,
+                ASSETS_SCALE,
+                instance.rotation,
+            );
+            (asset.spawn_commands)(entity_commands);
+        }
+    }
+}
