@@ -1,5 +1,6 @@
-use bevy::prelude::*;
 use std::sync::Arc;
+use bevy::prelude::*;
+use bevy::tasks::Task;
 use std::collections::HashMap;
 use bevy_procedural_tilemaps::prelude::*;
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -23,6 +24,10 @@ struct ChunkResult {
     chunk_x: u32,
     chunk_y: u32,
 }
+
+/// Background task producing generated chunk data.
+#[derive(Resource)]
+pub struct MapGenTask(Task<Vec<ChunkResult>>);
 
 pub fn setup_generator(mut commands: Commands, asset_server: Res<AssetServer>, mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>) {
     // 1. Rules Initialization - Get tile definitions and connection rules
