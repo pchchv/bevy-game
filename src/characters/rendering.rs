@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::characters::state::CharacterState;
-use crate::config::map::{GRID_Y, TILE_SIZE};
+use crate::config::map::{TOTAL_GRID_Y, TILE_SIZE};
 use crate::config::player::PLAYER_SCALE;
 
 /// Z-depth constants for proper layering.
@@ -13,8 +13,8 @@ const CHARACTER_Z_OFFSET: f32 = 0.5;  // Small offset to stay above ground props
 
 pub fn update_character_depth(mut character_query: Query<&mut Transform, (With<CharacterState>, Changed<Transform>)>) {
     // Map dimensions for normalization
-    let map_height = TILE_SIZE * GRID_Y as f32;
-    let map_y0 = -TILE_SIZE * GRID_Y as f32 / 2.0;  // Map origin Y (centered)
+    let map_height = TILE_SIZE * TOTAL_GRID_Y as f32;
+    let map_y0 = -TILE_SIZE * TOTAL_GRID_Y as f32 / 2.0;
     // Character sprite height for feet position calculation
     let character_sprite_height = 64.0 * PLAYER_SCALE;
     for mut transform in character_query.iter_mut() {

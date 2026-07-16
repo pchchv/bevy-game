@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_procedural_tilemaps::prelude::*;
 
-use crate::config::map::{GRID_X, GRID_Y, NODE_SIZE_Z, TILE_SIZE};
+use crate::config::map::{CHUNKS_X, CHUNKS_Y, GRID_X, GRID_Y, NODE_SIZE_Z, TILE_SIZE, TOTAL_GRID_X, TOTAL_GRID_Y};
 use crate::map::{assets::{load_assets, prepare_tilemap_handles}, rules::build_world};
 
 // Configurable values
