@@ -15,6 +15,13 @@ const NODE_SIZE: Vec3 = Vec3::new(TILE_SIZE, TILE_SIZE, NODE_SIZE_Z);
 const ASSETS_SCALE: Vec3 = Vec3::new(2.0, 2.0, 1.0);
 const GRID_Z: u32 = 5;
 
+struct ChunkResult {
+    grid_data: GridData<Cartesian3D, ModelInstance, CartesianGrid<Cartesian3D>>,
+    chunk_offset: Vec3,
+    chunk_x: u32,
+    chunk_y: u32,
+}
+
 pub fn setup_generator(mut commands: Commands, asset_server: Res<AssetServer>, mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>) {
     // 1. Rules Initialization - Get tile definitions and connection rules
     let (assets_definitions, models, socket_collection) = build_world();
