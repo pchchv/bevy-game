@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use std::sync::Arc;
 use std::collections::HashMap;
 use bevy_procedural_tilemaps::prelude::*;
+use std::sync::atomic::{AtomicU32, Ordering};
 use bevy_procedural_tilemaps::proc_gen::grid::GridData;
 use bevy_procedural_tilemaps::proc_gen::generator::rules::Rules;
 use bevy_procedural_tilemaps::proc_gen::generator::model::ModelInstance;
@@ -14,6 +15,7 @@ const TILEMAP_FILE: &str = "tilemap.png";
 const NODE_SIZE: Vec3 = Vec3::new(TILE_SIZE, TILE_SIZE, NODE_SIZE_Z);
 const ASSETS_SCALE: Vec3 = Vec3::new(2.0, 2.0, 1.0);
 const GRID_Z: u32 = 5;
+const MAX_BACKTRACKS: u32 = 2048;
 
 struct ChunkResult {
     grid_data: GridData<Cartesian3D, ModelInstance, CartesianGrid<Cartesian3D>>,
@@ -179,4 +181,74 @@ fn try_generate_chunk(
         Ok((_, data)) => Some(data),
         Err(_) => None,
     }
+}
+
+fn generate_all_chunks(rules_arc: Arc<Rules<Cartesian3D>>, grid_template: CartesianGrid<Cartesian3D>, progress: Arc<AtomicU32>) -> Vec<ChunkResult> {
+    let chunk_order = build_chunk_order();
+    let mut generated_chunks: HashMap<
+        (u32, u32),
+        GridData<Cartesian3D, ModelInstance, CartesianGrid<Cartesian3D>>,
+    > = HashMap::new();
+    let mut index: usize = 0;
+    let mut backtracks: u32 = 0;
+    while index < chunk_order.len() {
+        let (cx, cy) = chunk_order[index];
+        let initial_nodes = build_initial_nodes(cx, cy, &generated_chunks, &grid_template);
+        if let Some(grid_data) = try_generate_chunk(&rules_arc, &grid_template, &initial_nodes) {
+            generated_chunks.insert((cx, cy), grid_data);
+            progress.store((index as u32) + 1, Ordering::Relaxed);
+            info!("Generated chunk ({}, {})", cx, cy);
+            index += 1;
+            continue;
+        }
+
+        let Some(backtrack_to) = backtrack_start_index(index, cx, cy) else {
+            panic!(
+                "Chunk ({}, {}) failed with strict seam pins and has no valid backtrack target",
+                cx, cy
+            );
+        };
+
+        backtracks += 1;
+        if backtracks > MAX_BACKTRACKS {
+            panic!(
+                "Exceeded max backtracks ({}) while generating strict stitched map",
+                MAX_BACKTRACKS
+            );
+        }
+
+        let (bt_x, bt_y) = chunk_order[backtrack_to];
+        warn!(
+            "Chunk ({}, {}) failed with strict seam pins; backtracking to chunk ({}, {}) [{}/{}]",
+            cx, cy, bt_x, bt_y, backtracks, MAX_BACKTRACKS
+        );
+
+        for rollback_index in backtrack_to..index {
+            let (rx, ry) = chunk_order[rollback_index];
+            generated_chunks.remove(&(rx, ry));
+        }
+        
+        progress.store(backtrack_to as u32, Ordering::Relaxed);
+        index = backtrack_to;
+    }
+
+    // Convert HashMap into results for spawning
+    let mut results = Vec::with_capacity((CHUNKS_X * CHUNKS_Y) as usize);
+    for cy in 0..CHUNKS_Y {
+        for cx in 0..CHUNKS_X {
+            let grid_data = generated_chunks.remove(&(cx, cy)).unwrap();
+            let chunk_offset = Vec3::new(
+                (cx as f32 * (GRID_X - 1) as f32 - TOTAL_GRID_X as f32 / 2.0) * TILE_SIZE,
+                (cy as f32 * (GRID_Y - 1) as f32 - TOTAL_GRID_Y as f32 / 2.0) * TILE_SIZE,
+                0.0,
+            );
+            results.push(ChunkResult {
+                grid_data,
+                chunk_offset,
+                chunk_x: cx,
+                chunk_y: cy,
+            });
+        }
+    }
+    results
 }
