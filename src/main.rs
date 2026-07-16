@@ -14,10 +14,9 @@ use bevy::{
     window::{MonitorSelection, Window, WindowMode, WindowPlugin},
 };
 
-use bevy_procedural_tilemaps::prelude::*;
-
+use crate::state::GameState;
 use crate::camera::CameraPlugin;
-use crate::map::generate::setup_generator;
+use crate::map::generate::{setup_generator, poll_map_generation};
 
 fn main() {
     App::new()
@@ -38,7 +37,6 @@ fn main() {
                 })
                 .set(ImagePlugin::default_nearest()),
         )
-        .add_plugins(ProcGenSimplePlugin::<Cartesian3D, Sprite>::default())
         .add_plugins(state::StatePlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(inventory::InventoryPlugin)
@@ -48,5 +46,6 @@ fn main() {
         .add_plugins(combat::CombatPlugin)
         .add_plugins(enemy::EnemyPlugin)
         .add_systems(Startup, setup_generator)
+        .add_systems(Update, poll_map_generation.run_if(in_state(GameState::Loading)))
         .run();
 }
