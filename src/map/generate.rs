@@ -29,6 +29,13 @@ struct ChunkResult {
 #[derive(Resource)]
 pub struct MapGenTask(Task<Vec<ChunkResult>>);
 
+/// Stores the spawner and grid template needed after background generation completes.
+#[derive(Resource)]
+pub struct MapSpawnResources {
+    spawner: NodesSpawner<Sprite>,
+    grid_template: CartesianGrid<Cartesian3D>,
+}
+
 pub fn setup_generator(mut commands: Commands, asset_server: Res<AssetServer>, mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>) {
     // 1. Rules Initialization - Get tile definitions and connection rules
     let (assets_definitions, models, socket_collection) = build_world();
