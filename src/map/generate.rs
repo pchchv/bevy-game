@@ -3,8 +3,9 @@ use bevy::prelude::*;
 use std::collections::HashMap;
 use bevy_procedural_tilemaps::prelude::*;
 use std::sync::atomic::{AtomicU32, Ordering};
-use bevy::tasks::{Task, AsyncComputeTaskPool};
+use bevy::tasks::futures_lite::future::poll_once;
 use bevy_procedural_tilemaps::proc_gen::grid::GridData;
+use bevy::tasks::{block_on, Task, AsyncComputeTaskPool};
 use bevy_procedural_tilemaps::proc_gen::generator::rules::Rules;
 use bevy_procedural_tilemaps::proc_gen::generator::model::ModelInstance;
 
@@ -324,4 +325,39 @@ fn spawn_chunk_tiles(
             (asset.spawn_commands)(entity_commands);
         }
     }
+}
+
+pub fn poll_map_generation(mut commands: Commands, task: Option<ResMut<MapGenTask>>, resources: Option<Res<MapSpawnResources>>) {
+    let (Some(mut task), Some(resources)) = (task, resources) else {
+        return;
+    };
+
+    // Check if the task is done
+    let Some(chunks) = block_on(poll_once(&mut task.0)) else {
+        return; // Still running...
+    };
+
+    // Task finished! Spawn everything.
+    for chunk in &chunks {
+        spawn_chunk_tiles(
+            &mut commands,
+            &resources.grid_template,
+            &resources.spawner,
+            &chunk.grid_data,
+            chunk.chunk_offset,
+            chunk.chunk_x,
+            chunk.chunk_y,
+        );
+    }
+
+    // Cleanup and mark as ready
+    commands.remove_resource::<MapGenTask>();
+    commands.remove_resource::<MapSpawnResources>();
+    commands.remove_resource::<MapGenProgress>();
+    commands.insert_resource(MapReady);
+
+    info!(
+        "Map generation complete: {}x{} chunks, {}x{} total tiles",
+        CHUNKS_X, CHUNKS_Y, TOTAL_GRID_X, TOTAL_GRID_Y
+    );
 }
