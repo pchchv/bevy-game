@@ -1,7 +1,9 @@
 use bevy::prelude::*;
+use std::sync::Arc;
 use std::collections::HashMap;
 use bevy_procedural_tilemaps::prelude::*;
 use bevy_procedural_tilemaps::proc_gen::grid::GridData;
+use bevy_procedural_tilemaps::proc_gen::generator::rules::Rules;
 use bevy_procedural_tilemaps::proc_gen::generator::model::ModelInstance;
 
 use crate::config::map::{CHUNKS_X, CHUNKS_Y, GRID_X, GRID_Y, NODE_SIZE_Z, TILE_SIZE, TOTAL_GRID_X, TOTAL_GRID_Y};
@@ -90,4 +92,84 @@ fn build_initial_nodes(
     }
     
     initial_nodes
+}
+
+fn backtrack_start_index(index: usize, cx: u32, cy: u32) -> Option<usize> {
+    if cx > 0 && cy > 0 {
+        // Corner conflict: reopen the 2x2 dependency root.
+        Some(index - CHUNKS_X as usize - 1)
+    } else if cx > 0 {
+        Some(index - 1)
+    } else if cy > 0 {
+        Some(index - CHUNKS_X as usize)
+    } else {
+        None
+    }
+}
+
+fn try_generate_chunk(
+    rules: &Arc<Rules<Cartesian3D>>,
+    grid: &CartesianGrid<Cartesian3D>,
+    initial_nodes: &[((u32, u32, u32), ModelInstance)],
+) -> Option<GridData<Cartesian3D, ModelInstance, CartesianGrid<Cartesian3D>>> {
+    // Border exemptions are directional: only outward chunk-boundary directions.
+    let mut border_zones = Vec::with_capacity(initial_nodes.len() * 2);
+    let dir_x_forward = usize::from(Direction::XForward);
+    let dir_y_forward = usize::from(Direction::YForward);
+    let dir_x_backward = usize::from(Direction::XBackward);
+    let dir_y_backward = usize::from(Direction::YBackward);
+    let dir_z_forward = usize::from(Direction::ZForward);
+    let dir_z_backward = usize::from(Direction::ZBackward);
+    for &((x, y, z), _) in initial_nodes {
+        let idx = grid.index_from_coords(x, y, z);
+        if x == 0 {
+            border_zones.push((idx, dir_x_backward));
+        }
+
+        if x == GRID_X - 1 {
+            border_zones.push((idx, dir_x_forward));
+        }
+
+        if y == 0 {
+            border_zones.push((idx, dir_y_backward));
+        }
+
+        if y == GRID_Y - 1 {
+            border_zones.push((idx, dir_y_forward));
+        }
+        
+        if z == 0 {
+            border_zones.push((idx, dir_z_backward));
+        }
+        
+        if z == GRID_Z - 1 {
+            border_zones.push((idx, dir_z_forward));
+        }
+    }
+
+    let gen_builder = GeneratorBuilder::new()
+        .with_shared_rules(rules.clone())
+        .with_grid(grid.clone())
+        .with_rng(RngMode::RandomSeed)
+        .with_node_heuristic(NodeSelectionHeuristic::MinimumRemainingValue)
+        .with_model_heuristic(ModelSelectionHeuristic::WeightedProbability)
+        .with_border_zones(border_zones);
+    let gen_builder = if !initial_nodes.is_empty() {
+        match gen_builder.with_initial_nodes(initial_nodes.to_vec()) {
+            Ok(b) => b,
+            Err(_) => return None,
+        }
+    } else {
+        gen_builder
+    };
+
+    let mut generator = match gen_builder.build() {
+        Ok(g) => g,
+        Err(_) => return None,
+    };
+
+    match generator.generate_grid() {
+        Ok((_, data)) => Some(data),
+        Err(_) => None,
+    }
 }
