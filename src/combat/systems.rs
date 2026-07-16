@@ -56,7 +56,7 @@ pub fn handle_power_input(
     let spawn_position = position + direction * 5.0;
     // Get visuals from power type
     let visuals = combat.power_type.visuals(direction);
-    spawn_projectile(&mut commands, spawn_position, combat.power_type, &visuals);
+    spawn_projectile(&mut commands, spawn_position, combat.power_type, &visuals, ProjectileOwner::Player);
 
     info!("{:?} projectile fired!", combat.power_type);
 }
