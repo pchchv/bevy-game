@@ -43,6 +43,10 @@ pub struct MapGenProgress {
     pub total: u32,
 }
 
+/// Marker resource: inserted when the map is fully spawned.
+#[derive(Resource)]
+pub struct MapReady;
+
 pub fn setup_generator(mut commands: Commands, asset_server: Res<AssetServer>, mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>) {
     // 1. Build rules, models, and assets (shared across all chunks)
     let (assets_definitions, models, socket_collection) = build_world();
