@@ -9,8 +9,9 @@ use bevy::tasks::{block_on, Task, AsyncComputeTaskPool};
 use bevy_procedural_tilemaps::proc_gen::generator::rules::Rules;
 use bevy_procedural_tilemaps::proc_gen::generator::model::ModelInstance;
 
+use crate::map::rules::build_world;
+use crate::map::assets::{load_assets, prepare_tilemap_handles, TilemapHandles};
 use crate::config::map::{CHUNKS_X, CHUNKS_Y, GRID_X, GRID_Y, NODE_SIZE_Z, TILE_SIZE, TOTAL_GRID_X, TOTAL_GRID_Y};
-use crate::map::{assets::{load_assets, prepare_tilemap_handles}, rules::build_world};
 
 const ASSETS_PATH: &str = "tile_layers";
 const TILEMAP_FILE: &str = "tilemap.png";
@@ -48,7 +49,7 @@ pub struct MapGenProgress {
 #[derive(Resource)]
 pub struct MapReady;
 
-pub fn setup_generator(mut commands: Commands, asset_server: Res<AssetServer>, mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>) {
+pub fn setup_generator(mut commands: Commands, tilemap_handles: Res<TilemapHandles>) {
     // 1. Build rules, models, and assets (shared across all chunks)
     let (assets_definitions, models, socket_collection) = build_world();
     let rules = RulesBuilder::new_cartesian_3d(models, socket_collection)
@@ -57,7 +58,6 @@ pub fn setup_generator(mut commands: Commands, asset_server: Res<AssetServer>, m
         .unwrap();
     let rules_arc = Arc::new(rules);
     let grid_template = CartesianGrid::new_cartesian_3d(GRID_X, GRID_Y, GRID_Z, false, false, false);
-    let tilemap_handles = prepare_tilemap_handles(&asset_server, &mut atlas_layouts, ASSETS_PATH, TILEMAP_FILE);
     let models_assets = load_assets(&tilemap_handles, assets_definitions);
     let spawner = NodesSpawner::new(models_assets, NODE_SIZE, ASSETS_SCALE);
     // Store resources needed for spawning later
@@ -125,7 +125,7 @@ fn build_initial_nodes(
             }
         }
     }
-    
+
     initial_nodes
 }
 
