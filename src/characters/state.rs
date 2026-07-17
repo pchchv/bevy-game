@@ -1,7 +1,8 @@
 use bevy::prelude::*;
+use serde::{Serialize, Deserialize};
 
 /// Character states. Only one can be active at a time.
-#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum CharacterState {
     #[default]
     Idle,

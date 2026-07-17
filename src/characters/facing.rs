@@ -1,8 +1,9 @@
 use bevy::prelude::*;
+use serde::{Serialize, Deserialize};
 
 /// The direction a character is facing.
 /// Separate from movement - character can face one way while moving another.
-#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum Facing {
     Up,
     Left,

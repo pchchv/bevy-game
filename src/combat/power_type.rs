@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 use crate::particles::components::{EmissionShape, ParticleConfig};
+use serde::{Serialize, Deserialize};
 
 /// The different magical powers available
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum PowerType {
     #[default]
     Fire,
@@ -11,7 +12,6 @@ pub enum PowerType {
     Poison,
 }
 
-/// Visual configuration for a power - decoupled from behavior
 #[derive(Clone)]
 pub struct PowerVisuals {
     pub primary: ParticleConfig,

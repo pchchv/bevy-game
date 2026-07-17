@@ -1,11 +1,12 @@
 use std::fmt;
 use std::collections::HashMap;
+use serde::{Serialize, Deserialize};
 use bevy::prelude::*;
 
 use crate::config::pickup::DEFAULT_RADIUS;
 
 /// Types of items that can be collected.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ItemKind {
     Plant1,
     Plant2,
