@@ -3,6 +3,15 @@ use bevy::prelude::*;
 #[derive(Component)]
 pub struct PauseMenu;
 
+#[derive(Component)]
+pub enum PauseButton {
+    Resume,
+    SaveGame,
+    LoadGame,
+    MainMenu,
+    Quit,
+}
+
 pub fn spawn_pause_menu(mut commands: Commands) {
     commands.spawn((
         PauseMenu,
