@@ -49,3 +49,13 @@ pub fn despawn_pause_menu(mut commands: Commands, query: Query<Entity, With<Paus
 
     info!("Pause menu despawned");
 }
+
+pub fn handle_pause_hover(mut interaction_query: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<PauseButton>)>) {
+    for (interaction, mut bg) in interaction_query.iter_mut() {
+        *bg = match interaction {
+            Interaction::Hovered => BackgroundColor(Color::srgba(0.25, 0.25, 0.5, 0.9)),
+            Interaction::Pressed => BackgroundColor(Color::srgba(0.35, 0.35, 0.6, 0.9)),
+            Interaction::None => BackgroundColor(Color::srgba(0.15, 0.15, 0.3, 0.9)),
+        };
+    }
+}
