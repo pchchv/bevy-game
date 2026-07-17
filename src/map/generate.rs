@@ -361,3 +361,8 @@ pub fn poll_map_generation(mut commands: Commands, task: Option<ResMut<MapGenTas
         CHUNKS_X, CHUNKS_Y, TOTAL_GRID_X, TOTAL_GRID_Y
     );
 }
+
+pub fn prepare_tilemap_handles_resource(mut commands: Commands, asset_server: Res<AssetServer>, mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>) {
+    let tilemap_handles = prepare_tilemap_handles(&asset_server, &mut atlas_layouts, ASSETS_PATH, TILEMAP_FILE);
+    commands.insert_resource(tilemap_handles);
+}
