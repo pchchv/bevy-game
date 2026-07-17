@@ -75,4 +75,14 @@ impl Inventory {
         parts.sort();
         parts.join(", ")
     }
+    
+    /// Get a reference to the items map for serialization.
+    pub fn items(&self) -> &HashMap<ItemKind, u32> {
+        &self.items
+    }
+
+    /// Replace the entire items map (used when loading saves).
+    pub fn set_items(&mut self, items: HashMap<ItemKind, u32>) {
+        self.items = items;
+    }
 }
