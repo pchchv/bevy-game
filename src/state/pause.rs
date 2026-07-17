@@ -37,6 +37,39 @@ pub fn spawn_pause_menu(mut commands: Commands) {
                 ..default()
             },
         ));
+        
+        let buttons = [
+            (PauseButton::Resume, "Resume"),
+            (PauseButton::SaveGame, "Save Game"),
+            (PauseButton::LoadGame, "Load Game"),
+            (PauseButton::MainMenu, "Main Menu"),
+            (PauseButton::Quit, "Quit"),
+        ];
+        
+        for (btn_type, label) in buttons {
+            parent.spawn((
+                btn_type,
+                Button,
+                Node {
+                    width: Val::Px(250.0),
+                    height: Val::Px(50.0),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    margin: UiRect::vertical(Val::Px(5.0)),
+                    ..default()
+                },
+                BackgroundColor(Color::srgba(0.15, 0.15, 0.3, 0.9)),
+            )).with_children(|btn_parent| {
+                btn_parent.spawn((
+                    Text::new(label),
+                    TextFont {
+                        font_size: FontSize::Px(24.0),
+                        ..default()
+                    },
+                    TextColor(Color::WHITE),
+                ));
+            });
+        }
     });
 
     info!("Pause menu spawned");
