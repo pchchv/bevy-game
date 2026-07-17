@@ -43,7 +43,7 @@ impl SpawnableAsset {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Resource)]
 pub struct TilemapHandles {
     pub image: Handle<Image>,
     pub layout: Handle<TextureAtlasLayout>,
