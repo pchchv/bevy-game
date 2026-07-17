@@ -147,6 +147,8 @@ fn create_spawner(tile_type: Option<TileType>, pickable: Option<ItemKind>) -> fn
             e.insert((TileMarker::new(TileType::Grass), Pickable::new(ItemKind::Plant4)));
         },
         // Default: no components
-        _ => |_: &mut EntityCommands| {},
+        _ => |e: &mut EntityCommands| {
+            e.insert(TileMarker::new(TileType::Empty)); 
+        },
     }
 }
