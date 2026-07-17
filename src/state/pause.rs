@@ -11,18 +11,22 @@ pub fn spawn_pause_menu(mut commands: Commands) {
             height: Val::Percent(100.0),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
+            flex_direction: FlexDirection::Column,
             ..default()
         },
         BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.7)),
     )).with_children(|parent| {
         parent.spawn((
-            Text::new("PAUSED\n\nPress ESC to resume"),
+            Text::new("PAUSED"),
             TextFont {
-                font_size: FontSize::Px(36.0),
+                font_size: FontSize::Px(42.0),
                 ..default()
             },
             TextColor(Color::WHITE),
-            TextLayout::justify(Justify::Center),
+            Node {
+                margin: UiRect::bottom(Val::Px(30.0)),
+                ..default()
+            },
         ));
     });
 
