@@ -90,6 +90,6 @@ pub fn despawn_game_over_screen(mut commands: Commands, query: Query<Entity, Wit
 pub fn handle_restart_input(input: Res<ButtonInput<KeyCode>>, mut next_state: ResMut<NextState<GameState>>) {
     if input.just_pressed(KeyCode::KeyR) {
         info!("Restarting game...");
-        next_state.set(GameState::Playing);
+        next_state.set(GameState::Loading);
     }
 }
