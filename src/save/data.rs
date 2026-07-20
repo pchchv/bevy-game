@@ -64,3 +64,23 @@ pub struct TileSave {
     pub tile_type: TileType,
     pub pickable: Option<ItemKind>,
 }
+
+pub fn compute_checksum(data: &[u8]) -> u64 {
+    // Simple FNV-1a hash
+    let mut hash: u64 = 0xcbf29ce484222325;
+    for &byte in data {
+        hash ^= byte as u64;
+        hash = hash.wrapping_mul(0x100000001b3);
+    }
+    hash
+}
+
+pub fn saves_directory() -> std::path::PathBuf {
+    let mut path = std::env::current_exe()
+        .unwrap_or_default()
+        .parent()
+        .unwrap_or(std::path::Path::new("."))
+        .to_path_buf();
+    path.push("saves");
+    path
+}
