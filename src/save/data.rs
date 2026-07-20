@@ -26,6 +26,14 @@ pub struct SaveData {
     pub tiles: Vec<TileSave>,
 }
 
+#[derive(Serialize, Deserialize, Clone)]
+pub struct SaveMetadata {
+    pub timestamp: String,
+    pub character_name: String,
+    pub player_health: f32,
+    pub player_max_health: f32,
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct PlayerSave {
     pub position: [f32; 3],
