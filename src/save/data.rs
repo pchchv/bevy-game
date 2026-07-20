@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 
 use crate::combat::PowerType;
@@ -12,6 +13,17 @@ pub const SAVE_VERSION: u32 = 1;
 pub struct SaveFile {
     pub checksum: u64,
     pub data: Vec<u8>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SaveData {
+    pub version: u32,
+    pub timestamp: String,
+    pub slot_name: String,
+    pub player: PlayerSave,
+    pub enemies: Vec<EnemySave>,
+    pub inventory: HashMap<ItemKind, u32>,
+    pub tiles: Vec<TileSave>,
 }
 
 #[derive(Serialize, Deserialize)]
