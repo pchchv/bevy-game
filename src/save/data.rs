@@ -84,3 +84,11 @@ pub fn saves_directory() -> std::path::PathBuf {
     path.push("saves");
     path
 }
+
+pub fn save_file_path(slot: usize) -> std::path::PathBuf {
+    saves_directory().join(format!("slot_{}.sav", slot))
+}
+
+pub fn meta_file_path(slot: usize) -> std::path::PathBuf {
+    saves_directory().join(format!("slot_{}.meta", slot))
+}
