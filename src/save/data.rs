@@ -1,6 +1,8 @@
 use serde::{Serialize, Deserialize};
 
 use crate::combat::PowerType;
+use crate::inventory::ItemKind;
+use crate::collision::TileType;
 use crate::characters::facing::Facing;
 
 pub const MAX_SLOTS: usize = 5;
@@ -31,4 +33,14 @@ pub struct EnemySave {
     pub character_name: String,
     pub power_type: PowerType,
     pub facing: Facing,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct TileSave {
+    pub position: [f32; 3],
+    pub rotation: [f32; 4],  // Quat (x, y, z, w) — WFC applies Z-axis rotation to tiles
+    pub scale: [f32; 3],
+    pub atlas_index: usize,
+    pub tile_type: TileType,
+    pub pickable: Option<ItemKind>,
 }
