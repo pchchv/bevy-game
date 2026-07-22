@@ -231,3 +231,225 @@ pub fn execute_save(
         Err(e) => error!("Failed to save: {}", e),
     }
 }
+
+pub fn execute_load(world: &mut World) {
+    let slot = {
+        let pending = world.resource::<PendingSaveLoadAction>();
+        match pending.0 {
+            Some((SaveLoadMode::Load, slot)) => slot,
+            _ => return,
+        }
+    };
+    world.resource_mut::<PendingSaveLoadAction>().0 = None;
+    let save_data = match systems::load_save_data(slot) {
+        Ok(data) => data,
+        Err(e) => {
+            error!("Failed to load: {}", e);
+            return;
+        }
+    };
+    // Despawn all gameplay entities
+    let mut to_despawn = Vec::new();
+    for entity in world.query_filtered::<Entity, With<TileMarker>>().iter(world) {
+        to_despawn.push(entity);
+    }
+
+    for entity in world.query_filtered::<Entity, With<Player>>().iter(world) {
+        to_despawn.push(entity);
+    }
+
+    for entity in world.query_filtered::<Entity, With<Enemy>>().iter(world) {
+        to_despawn.push(entity);
+    }
+
+    for entity in world.query_filtered::<Entity, With<Projectile>>().iter(world) {
+        to_despawn.push(entity);
+    }
+
+    for entity in world.query_filtered::<Entity, With<ProjectileEffect>>().iter(world) {
+        to_despawn.push(entity);
+    }
+
+    for entity in world.query_filtered::<Entity, With<ParticleEmitter>>().iter(world) {
+        to_despawn.push(entity);
+    }
+
+    for entity in world.query_filtered::<Entity, With<Particle>>().iter(world) {
+        to_despawn.push(entity);
+    }
+
+    for entity in world.query_filtered::<Entity, With<HealthBarOwner>>().iter(world) {
+        to_despawn.push(entity);
+    }
+
+    for entity in world.query_filtered::<Entity, With<PauseMenu>>().iter(world) {
+        to_despawn.push(entity);
+    }
+
+    for entity in world.query_filtered::<Entity, With<SaveLoadUI>>().iter(world) {
+        to_despawn.push(entity);
+    }
+
+    for entity in to_despawn {
+        world.despawn(entity);
+    }
+
+    // Reset save/load UI state so it doesn't re-render stale UI
+    let mut ui_state = world.resource_mut::<SaveLoadUIState>();
+    ui_state.active = false;
+    let tilemap_handles = match world.get_resource::<TilemapHandles>() {
+        Some(h) => h.clone(),
+        None => {
+            error!("TilemapHandles not available for loading");
+            return;
+        }
+    };
+
+    // Spawn tiles
+    for tile in &save_data.tiles {
+        let sprite = tilemap_handles.sprite(tile.atlas_index);
+        let transform = Transform {
+            translation: Vec3::new(tile.position[0], tile.position[1], tile.position[2]),
+            rotation: Quat::from_xyzw(
+                tile.rotation[0],
+                tile.rotation[1],
+                tile.rotation[2],
+                tile.rotation[3],
+            ),
+            scale: Vec3::new(tile.scale[0], tile.scale[1], tile.scale[2]),
+        };
+        let mut entity = world.spawn((sprite, transform, TileMarker::new(tile.tile_type)));
+        if let Some(item_kind) = tile.pickable {
+            entity.insert(Pickable::new(item_kind));
+        }
+    }
+
+    let characters_list_handle = {
+        let Some(res) = world.get_resource::<CharactersListResource>() else {
+            error!("CharactersListResource not available");
+            return;
+        };
+        res.handle.clone()
+    };
+    let characters_list = {
+        let lists = world.resource::<Assets<CharactersList>>();
+        let Some(list) = lists.get(&characters_list_handle) else {
+            error!("Characters list not loaded");
+            return;
+        };
+        list.clone()
+    };
+    // Spawn player
+    let player_data = &save_data.player;
+    let char_idx = player_data        .character_index        .min(characters_list.characters.len() - 1);
+    let character_entry = characters_list.characters[char_idx].clone();
+    let max_row = character_entry.calculate_max_animation_row();
+    let layout = {
+        let mut layouts = world.resource_mut::<Assets<TextureAtlasLayout>>();
+        layouts.add(TextureAtlasLayout::from_grid(
+            UVec2::splat(character_entry.tile_size),
+            character_entry.atlas_columns as u32,
+            (max_row + 1) as u32,
+            None,
+            None,
+        ))
+    };
+    let texture = {
+        let asset_server = world.resource::<AssetServer>();
+        asset_server.load(&character_entry.texture_path)
+    };
+    let sprite = Sprite::from_atlas_image(texture, TextureAtlas { layout, index: 0 });
+    world.spawn((
+        Player,
+        Transform::from_translation(Vec3::new(
+            player_data.position[0],
+            player_data.position[1],
+            player_data.position[2],
+        ))
+        .with_scale(Vec3::splat(PLAYER_SCALE)),
+        sprite,
+        AnimationController::default(),
+        CharacterState::default(),
+        Velocity::default(),
+        player_data.facing,
+        Collider::default(),
+        PlayerCombat::new(player_data.power_type),
+        Health {
+            current: player_data.health_current,
+            max: player_data.health_max,
+        },
+        AnimationTimer(Timer::from_seconds(
+            DEFAULT_ANIMATION_FRAME_TIME,
+            TimerMode::Repeating,
+        )),
+        character_entry,
+    ));
+
+    // Spawn enemies
+    for enemy_data in &save_data.enemies {
+        let enemy_entry = characters_list.characters.iter().find(|c| c.name == enemy_data.character_name);
+        let Some(enemy_entry) = enemy_entry else {
+            warn!("Unknown enemy character: {}", enemy_data.character_name);
+            continue;
+        };
+        let enemy_entry = enemy_entry.clone();
+        let max_row = enemy_entry.calculate_max_animation_row();
+        let layout = {
+            let mut layouts = world.resource_mut::<Assets<TextureAtlasLayout>>();
+            layouts.add(TextureAtlasLayout::from_grid(
+                UVec2::splat(enemy_entry.tile_size),
+                enemy_entry.atlas_columns as u32,
+                (max_row + 1) as u32,
+                None,
+                None,
+            ))
+        };
+        let texture = {
+            let asset_server = world.resource::<AssetServer>();
+            asset_server.load(&enemy_entry.texture_path)
+        };
+        let sprite = Sprite::from_atlas_image(texture, TextureAtlas { layout, index: 0 });
+
+        use crate::config::enemy::ENEMY_SCALE;
+        use crate::enemy::components::*;
+
+        world.spawn((
+            Enemy,
+            sprite,
+            Transform::from_translation(Vec3::new(
+                enemy_data.position[0],
+                enemy_data.position[1],
+                enemy_data.position[2],
+            ))
+            .with_scale(Vec3::splat(ENEMY_SCALE)),
+            GlobalTransform::default(),
+            AnimationController::default(),
+            CharacterState::default(),
+            Velocity::default(),
+            enemy_data.facing,
+            Collider::default(),
+            EnemyCombat::default(),
+            Health {
+                current: enemy_data.health_current,
+                max: enemy_data.health_max,
+            },
+            AIBehavior::default(),
+            EnemyPath::default(),
+            AnimationTimer(Timer::from_seconds(
+                DEFAULT_ANIMATION_FRAME_TIME,
+                TimerMode::Repeating,
+            )),
+            enemy_entry,
+        ));
+    }
+
+    world.resource_mut::<Inventory>().set_items(save_data.inventory);
+    world.resource_mut::<PlayerSpawned>().0 = true;
+    world.resource_mut::<EnemiesSpawned>().0 = true;
+    world.resource_mut::<CurrentCharacterIndex>().index = save_data.player.character_index;
+    world.resource_mut::<CollisionMapBuilt>().0 = false;
+    world.insert_resource(crate::map::generate::MapReady);
+    world.resource_mut::<NextState<GameState>>().set(GameState::Playing);
+
+    info!("Game loaded from slot {}", slot + 1);
+}
