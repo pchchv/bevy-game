@@ -49,3 +49,72 @@ pub fn handle_main_menu_hover(mut interaction_query: Query<(&Interaction, &mut B
         };
     }
 }
+
+pub fn spawn_main_menu(mut commands: Commands) {
+    commands
+        .spawn((
+            MainMenuScreen,
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            BackgroundColor(Color::srgb(0.05, 0.05, 0.1)),
+        ))
+        .with_children(|parent| {
+            parent.spawn((
+                Text::new("Main Menu"),
+                TextFont {
+                    font_size: FontSize::Px(64.0),
+                    ..default()
+                },
+                TextColor(Color::srgb(0.8, 0.7, 1.0)),
+                Node {
+                    margin: UiRect::bottom(Val::Px(60.0)),
+                    ..default()
+                },
+            ));
+
+            let buttons = [
+                (MainMenuButton::NewGame, "New Game"),
+                (MainMenuButton::LoadGame, "Load Game"),
+                (MainMenuButton::Quit, "Quit"),
+            ];
+
+            for (btn_type, label) in buttons {
+                parent
+                    .spawn((
+                        btn_type,
+                        Button,
+                        Node {
+                            width: Val::Px(300.0),
+                            height: Val::Px(55.0),
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            margin: UiRect::vertical(Val::Px(8.0)),
+                            ..default()
+                        },
+                        BackgroundColor(Color::srgba(0.15, 0.15, 0.3, 0.9)),
+                    ))
+                    .with_children(|btn_parent| {
+                        btn_parent.spawn((
+                            Text::new(label),
+                            TextFont {
+                                font_size: FontSize::Px(28.0),
+                                ..default()
+                            },
+                            TextColor(Color::WHITE),
+                        ));
+                    });
+            }
+        });
+}
+
+pub fn despawn_main_menu(mut commands: Commands, query: Query<Entity, With<MainMenuScreen>>) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn();
+    }
+}
