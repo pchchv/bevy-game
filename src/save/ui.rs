@@ -154,3 +154,80 @@ pub fn handle_save_load_ui(mut commands: Commands, ui_state: Res<SaveLoadUIState
                 });
         });
 }
+
+pub fn execute_save(
+    mut pending: ResMut<PendingSaveLoadAction>,
+    tile_query: Query<(&Transform, &Sprite, &TileMarker, Option<&Pickable>)>,
+    player_query: Query<
+        (&Transform, &Health, &PlayerCombat, &CharacterEntry, &Facing),
+        With<Player>,
+    >,
+    enemy_query: Query<(&Transform, &Health, &CharacterEntry, &Facing), With<Enemy>>,
+    inventory: Res<Inventory>,
+    character_index: Res<CurrentCharacterIndex>,
+) {
+    let Some((SaveLoadMode::Save, slot)) = pending.0 else {
+        return;
+    };
+    pending.0 = None;
+    let Ok((player_tf, player_health, player_combat, player_entry, player_facing)) =
+        player_query.single()
+    else {
+        error!("No player found for save");
+        return;
+    };
+    let player_save = PlayerSave {
+        position: [
+            player_tf.translation.x,
+            player_tf.translation.y,
+            player_tf.translation.z,
+        ],
+        health_current: player_health.current,
+        health_max: player_health.max,
+        power_type: player_combat.power_type,
+        character_name: player_entry.name.clone(),
+        character_index: character_index.index,
+        facing: *player_facing,
+    };
+    let mut enemies = Vec::new();
+    for (tf, health, entry, facing) in enemy_query.iter() {
+        enemies.push(EnemySave {
+            position: [tf.translation.x, tf.translation.y, tf.translation.z],
+            health_current: health.current,
+            health_max: health.max,
+            character_name: entry.name.clone(),
+            power_type: crate::combat::PowerType::Fire,
+            facing: *facing,
+        });
+    }
+
+    let mut tiles = Vec::new();
+    for (tf, sprite, tile_marker, pickable) in tile_query.iter() {
+        let atlas_index = sprite.texture_atlas.as_ref().map(|a| a.index).unwrap_or(0);
+        let rot = tf.rotation;
+        tiles.push(TileSave {
+            position: [tf.translation.x, tf.translation.y, tf.translation.z],
+            rotation: [rot.x, rot.y, rot.z, rot.w],
+            scale: [tf.scale.x, tf.scale.y, tf.scale.z],
+            atlas_index,
+            tile_type: tile_marker.tile_type,
+            pickable: pickable.map(|p| p.kind),
+        });
+    }
+
+    let timestamp = chrono::Local::now().format("%d %b %Y, %I:%M %p").to_string();
+    let save_data = SaveData {
+        version: SAVE_VERSION,
+        timestamp: timestamp.clone(),
+        slot_name: format!("Slot {}", slot + 1),
+        player: player_save,
+        enemies,
+        inventory: inventory.items().clone(),
+        tiles,
+    };
+
+    match do_write_save(slot, &save_data, &timestamp) {
+        Ok(()) => info!("Saved to slot {}", slot + 1),
+        Err(e) => error!("Failed to save: {}", e),
+    }
+}
