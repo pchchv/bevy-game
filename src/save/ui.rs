@@ -5,3 +5,6 @@ pub enum SaveLoadMode {
     Save,
     Load,
 }
+
+#[derive(Resource, Default)]
+pub struct PendingSaveLoadAction(pub Option<(SaveLoadMode, usize)>);
