@@ -38,7 +38,7 @@ impl Plugin for StatePlugin {
             .add_systems(OnExit(GameState::Loading), loading::despawn_loading_screen)
             // Pause state systems
             .add_systems(OnEnter(GameState::Paused), pause::spawn_pause_menu)
-            .add_systems(OnExit(GameState::Paused), pause::despawn_pause_menu)
+            .add_systems(OnExit(GameState::Paused), close_save_load_ui)
             .add_systems(Update, pause::handle_pause_buttons.run_if(in_state(GameState::Paused)),)
             .add_systems(Update, pause::handle_pause_hover.run_if(in_state(GameState::Paused)))
             // Pause toggle (works in Playing or Paused states)
@@ -88,4 +88,8 @@ fn toggle_pause(
             _ => {}
         }
     }
+}
+
+fn close_save_load_ui(mut ui_state: ResMut<SaveLoadUIState>) {
+    ui_state.active = false;
 }
