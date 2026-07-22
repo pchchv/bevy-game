@@ -24,6 +24,9 @@ use crate::particles::components::{Particle, ParticleEmitter};
 use crate::characters::config::{CharacterEntry, CharactersList};
 use crate::characters::spawn::{CharactersListResource, CurrentCharacterIndex, PlayerSpawned};
 
+#[derive(Component)]
+pub struct BackButton;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SaveLoadMode {
     Save,
