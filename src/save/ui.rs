@@ -27,6 +27,9 @@ use crate::characters::spawn::{CharactersListResource, CurrentCharacterIndex, Pl
 #[derive(Component)]
 pub struct BackButton;
 
+#[derive(Component)]
+pub struct SlotButton(pub usize);
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SaveLoadMode {
     Save,
