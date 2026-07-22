@@ -483,3 +483,26 @@ pub fn execute_load(world: &mut World) {
 
     info!("Game loaded from slot {}", slot + 1);
 }
+
+fn do_write_save(slot: usize, save_data: &SaveData, timestamp: &str) -> Result<(), String> {
+    let data_bytes = bincode::serde::encode_to_vec(save_data, bincode::config::standard()).map_err(|e| format!("Serialize error: {}", e))?;
+    let checksum = compute_checksum(&data_bytes);
+    let save_file = SaveFile {
+        checksum,
+        data: data_bytes,
+    };
+    let file_bytes = bincode::serde::encode_to_vec(&save_file, bincode::config::standard()).map_err(|e| format!("Serialize error: {}", e))?;
+    let dir = saves_directory();
+    std::fs::create_dir_all(&dir).map_err(|e| format!("Create dir error: {}", e))?;
+    std::fs::write(save_file_path(slot), &file_bytes).map_err(|e| format!("Write error: {}", e))?;
+    let metadata = SaveMetadata {
+        timestamp: timestamp.to_string(),
+        character_name: save_data.player.character_name.clone(),
+        player_health: save_data.player.health_current,
+        player_max_health: save_data.player.health_max,
+    };
+    let meta_bytes = bincode::serde::encode_to_vec(&metadata, bincode::config::standard()).map_err(|e| format!("Meta serialize error: {}", e))?;
+    std::fs::write(meta_file_path(slot), &meta_bytes).map_err(|e| format!("Meta write error: {}", e))?;
+
+    Ok(())
+}
