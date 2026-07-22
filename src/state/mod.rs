@@ -16,6 +16,21 @@ impl Plugin for StatePlugin {
     fn build(&self, app: &mut App) {
         app
             .init_state::<GameState>()
+            .add_systems(
+                OnEnter(GameState::MainMenu),
+                (game_over::cleanup_game_world, main_menu::spawn_main_menu).chain(),
+            )
+            .add_systems(OnExit(GameState::MainMenu), main_menu::despawn_main_menu)
+            .add_systems(
+                Update,
+                main_menu::handle_main_menu_buttons
+                    .run_if(in_state(GameState::MainMenu)),
+            )
+            .add_systems(
+                Update,
+                main_menu::handle_main_menu_hover
+                    .run_if(in_state(GameState::MainMenu)),
+            )
             // Loading state systems
             .add_systems(OnEnter(GameState::Loading), loading::spawn_loading_screen)
             .add_systems(Update, (check_assets_loaded, loading::animate_loading).run_if(in_state(GameState::Loading)))
