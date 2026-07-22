@@ -11,6 +11,7 @@ pathfinding = "4.9"
 bevy_procedural_tilemaps = "0.4.0"
 bevy_common_assets = { version = "0.17.0", features = ["ron"] }
 serde = { version = "1.0.229", features = ["derive"] }
+chrono = { version = "0.4.45", features = ["serde"] }
 
 [profile.dev]
 opt-level = 1
