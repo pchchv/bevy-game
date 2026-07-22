@@ -5,6 +5,7 @@ pub mod main_menu;
 pub(crate) mod pause;
 
 use bevy::prelude::*;
+use crate::save::SaveLoadUIState;
 use crate::map::generate::MapReady;
 use crate::characters::config::CharactersList;
 use crate::characters::spawn::CharactersListResource;
@@ -58,7 +59,7 @@ fn check_assets_loaded(
         return;
     };
     
-    if characters_lists.get(&res.handle).is_some()  && map_ready.is_some() {
+    if characters_lists.get(&res.handle).is_some() && map_ready.is_some()  {
         info!("Assets loaded, transitioning to Playing!");
         next_state.set(GameState::Playing);
     }
@@ -68,8 +69,13 @@ fn toggle_pause(
     input: Res<ButtonInput<KeyCode>>,
     current_state: Res<State<GameState>>,
     mut next_state: ResMut<NextState<GameState>>,
+    ui_state: Res<SaveLoadUIState>,
 ) {
     if input.just_pressed(KeyCode::Escape) {
+        if ui_state.active {
+            return;
+        }
+
         match current_state.get() {
             GameState::Playing => {
                 info!("Game paused");
