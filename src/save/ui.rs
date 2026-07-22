@@ -506,3 +506,40 @@ fn do_write_save(slot: usize, save_data: &SaveData, timestamp: &str) -> Result<(
 
     Ok(())
 }
+
+pub fn handle_back_button(
+    mut ui_state: ResMut<SaveLoadUIState>,
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<BackButton>)>,
+    input: Res<ButtonInput<KeyCode>>,
+) {
+    // Close on ESC
+    if input.just_pressed(KeyCode::Escape) {
+        ui_state.active = false;
+        return;
+    }
+
+    // Close on Back button click
+    for interaction in interaction_query.iter() {
+        if *interaction == Interaction::Pressed {
+            ui_state.active = false;
+        }
+    }
+}
+
+pub fn handle_slot_buttons(
+    mut ui_state: ResMut<SaveLoadUIState>,
+    mut pending: ResMut<PendingSaveLoadAction>,
+    interaction_query: Query<(&Interaction, &SlotButton), Changed<Interaction>>,
+) {
+    for (interaction, slot_btn) in interaction_query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+        
+        // Button was just clicked!
+        // 1. Record what needs to happen (Save or Load this slot)
+        pending.0 = Some((ui_state.mode, slot_btn.0));
+        // 2. Close the UI
+        ui_state.active = false;
+    }
+}
