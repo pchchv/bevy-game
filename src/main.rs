@@ -17,7 +17,7 @@ use bevy::{
 
 use crate::state::GameState;
 use crate::camera::CameraPlugin;
-use crate::map::generate::{setup_generator, poll_map_generation};
+use crate::map::generate::{setup_generator, prepare_tilemap_handles_resource, poll_map_generation};
 
 fn main() {
     App::new()
@@ -47,6 +47,7 @@ fn main() {
         .add_plugins(combat::CombatPlugin)
         .add_plugins(enemy::EnemyPlugin)
         .add_plugins(save::SavePlugin)
+        .add_systems(Startup, prepare_tilemap_handles_resource)
         .add_systems(OnEnter(GameState::Loading), setup_generator)
         .add_systems(Update, poll_map_generation.run_if(in_state(GameState::Loading)))
         .run();
