@@ -1,4 +1,7 @@
 use bevy::prelude::*;
+use super::GameState;
+use crate::save::SaveLoadUIState;
+use crate::save::ui::SaveLoadMode;
 
 #[derive(Component)]
 pub struct PauseMenu;
@@ -90,5 +93,42 @@ pub fn handle_pause_hover(mut interaction_query: Query<(&Interaction, &mut Backg
             Interaction::Pressed => BackgroundColor(Color::srgba(0.35, 0.35, 0.6, 0.9)),
             Interaction::None => BackgroundColor(Color::srgba(0.15, 0.15, 0.3, 0.9)),
         };
+    }
+}
+
+pub fn handle_pause_buttons(
+    mut next_state: ResMut<NextState<GameState>>,
+    mut ui_state: ResMut<SaveLoadUIState>,
+    interaction_query: Query<(&Interaction, &PauseButton), Changed<Interaction>>,
+    mut exit: MessageWriter<AppExit>,
+) {
+    if ui_state.active {
+        return;
+    }
+
+    for (interaction, button) in interaction_query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        match button {
+            PauseButton::Resume => {
+                next_state.set(GameState::Playing);
+            }
+            PauseButton::SaveGame => {
+                ui_state.active = true;
+                ui_state.mode = SaveLoadMode::Save;
+            }
+            PauseButton::LoadGame => {
+                ui_state.active = true;
+                ui_state.mode = SaveLoadMode::Load;
+            }
+            PauseButton::MainMenu => {
+                next_state.set(GameState::MainMenu);
+            }
+            PauseButton::Quit => {
+                exit.write(AppExit::Success);
+            }
+        }
     }
 }
