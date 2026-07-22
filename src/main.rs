@@ -46,7 +46,8 @@ fn main() {
         .add_plugins(particles::ParticlesPlugin)
         .add_plugins(combat::CombatPlugin)
         .add_plugins(enemy::EnemyPlugin)
-        .add_systems(Startup, setup_generator)
+        .add_plugins(save::SavePlugin)
+        .add_systems(OnEnter(GameState::Loading), setup_generator)
         .add_systems(Update, poll_map_generation.run_if(in_state(GameState::Loading)))
         .run();
 }
