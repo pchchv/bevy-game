@@ -34,3 +34,10 @@ pub fn stop_all_music(mut commands: Commands, existing: Query<Entity, With<Music
         commands.entity(entity).despawn();
     }
 }
+
+// Helper for removing duplicates.
+fn despawn_all_music(commands: &mut Commands, query: &Query<Entity, With<MusicTrack>>) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn();
+    }
+}
