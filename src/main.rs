@@ -2,6 +2,7 @@ mod map;
 mod save;
 mod enemy;
 mod state;
+mod audio;
 mod config;
 mod camera;
 mod combat;
