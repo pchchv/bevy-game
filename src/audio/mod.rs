@@ -1,1 +1,2 @@
+mod music;
 mod assets;
