@@ -1,3 +1,4 @@
+mod sfx;
 mod music;
 mod assets;
 
