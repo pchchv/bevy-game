@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use super::health::Health;
 use super::events::{EntityDeath, ProjectileHit};
 
+use crate::audio::SfxKind;
 use crate::state::GameState;
 use crate::characters::input::Player;
 
@@ -13,6 +14,9 @@ pub fn on_projectile_hit(hit: On<ProjectileHit>, mut healths: Query<&mut Health>
     };
 
     health.take_damage(&mut commands, hit.target, hit.damage);
+
+    commands.trigger(SfxKind::Hit);
+
     info!(
         "{:?} hit for {} damage! HP: {:.0}/{:.0}",
         hit.power_type, hit.damage, health.current, health.max
@@ -27,6 +31,9 @@ pub fn on_entity_death(death: On<EntityDeath>, mut commands: Commands, players: 
     commands.entity(death.entity).despawn();
     if is_player { 
         info!("Player defeated! Game Over."); 
+        commands.trigger(SfxKind::PlayerDeath);
         next_state.set(GameState::GameOver);
+    } else {
+        commands.trigger(SfxKind::EnemyDeath);
     }
 }
