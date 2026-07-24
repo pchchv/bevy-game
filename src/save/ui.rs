@@ -5,7 +5,6 @@ use super::data::*;
 
 use crate::enemy::Enemy;
 use crate::state::GameState;
-use crate::state::pause::PauseMenu;
 use crate::characters::animation::*;
 use crate::characters::input::Player;
 use crate::characters::facing::Facing;
@@ -312,21 +311,10 @@ pub fn execute_load(world: &mut World) {
         to_despawn.push(entity);
     }
 
-    for entity in world.query_filtered::<Entity, With<PauseMenu>>().iter(world) {
-        to_despawn.push(entity);
-    }
-
-    for entity in world.query_filtered::<Entity, With<SaveLoadUI>>().iter(world) {
-        to_despawn.push(entity);
-    }
-
     for entity in to_despawn {
         world.despawn(entity);
     }
 
-    // Reset save/load UI state so it doesn't re-render stale UI
-    let mut ui_state = world.resource_mut::<SaveLoadUIState>();
-    ui_state.active = false;
     let tilemap_handles = match world.get_resource::<TilemapHandles>() {
         Some(h) => h.clone(),
         None => {
@@ -371,7 +359,7 @@ pub fn execute_load(world: &mut World) {
     };
     // Spawn player
     let player_data = &save_data.player;
-    let char_idx = player_data        .character_index        .min(characters_list.characters.len() - 1);
+    let char_idx = player_data.character_index.min(characters_list.characters.len() - 1);
     let character_entry = characters_list.characters[char_idx].clone();
     let max_row = character_entry.calculate_max_animation_row();
     let layout = {
