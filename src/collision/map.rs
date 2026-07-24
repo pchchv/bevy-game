@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use super::TileType;
-use pathfinding::prelude::astar;
 
 /// Collision map resource that stores walkability information.
 /// Provides efficient spatial queries for movement validation.
@@ -32,10 +31,8 @@ impl CollisionMap {
         }
     }
 
-    #[cfg(debug_assertions)]
     pub fn width(&self) -> i32 { self.width }
     
-    #[cfg(debug_assertions)]
     pub fn height(&self) -> i32 { self.height }
     
     #[cfg(debug_assertions)]
@@ -56,7 +53,6 @@ impl CollisionMap {
         x >= 0 && x < self.width && y >= 0 && y < self.height
     }
 
-    /// Convert world position to grid coordinates.
     pub fn world_to_grid(&self, world_pos: Vec2) -> IVec2 {
         let grid_x = ((world_pos.x - self.origin_x) / self.tile_size).floor() as i32;
         let grid_y = ((world_pos.y - self.origin_y) / self.tile_size).floor() as i32;
@@ -71,7 +67,6 @@ impl CollisionMap {
         )
     }
     
-    /// Get the tile type at grid coordinates.
     pub fn get_tile(&self, x: i32, y: i32) -> Option<TileType> {
         if self.in_bounds(x, y) {
             Some(self.tiles[self.xy_to_idx(x, y)])
@@ -99,7 +94,6 @@ impl CollisionMap {
         self.is_walkable(grid_pos.x, grid_pos.y)
     }
 
-    /// Check if a circle intersects with a tile's bounding box.
     fn circle_intersects_tile(&self, center: Vec2, radius: f32, gx: i32, gy: i32) -> bool {
         // Tile bounding box
         let tile_min = Vec2::new(
@@ -117,7 +111,6 @@ impl CollisionMap {
         center.distance_squared(closest) <= radius * radius
     }
 
-    /// Check if a position with radius is within map bounds.
     fn is_within_bounds(&self, center: Vec2, radius: f32) -> bool {
         let left = self.origin_x;
         let right = self.origin_x + self.width as f32 * self.tile_size;
@@ -126,7 +119,6 @@ impl CollisionMap {
         center.x - radius >= left && center.x + radius <= right && center.y - radius >= bottom && center.y + radius <= top
     }
 
-    /// Check if a circle at the given world position is clear of obstacles.
     pub fn is_circle_clear(&self, center: Vec2, radius: f32) -> bool {
         // Early bounds check
         if !self.is_within_bounds(center, radius) {
@@ -163,8 +155,6 @@ impl CollisionMap {
         true
     }
 
-    /// Perform swept circle movement with axis-sliding.
-    /// Returns the furthest valid position the circle can reach.
     pub fn sweep_circle(&self, start: Vec2, end: Vec2, radius: f32) -> Vec2 {
         let delta = end - start;
         // No movement needed
@@ -203,8 +193,6 @@ impl CollisionMap {
         pos
     }
 
-    /// Get walkable neighboring grid cells (8 directions)
-    /// Diagonal movement only allowed if both adjacent cardinals are clear
     pub fn get_neighbors(&self, pos: IVec2) -> Vec<IVec2> {
         let mut neighbors = Vec::new();
         // Cardinal directions (always allowed if walkable)
@@ -301,8 +289,6 @@ impl CollisionMap {
     }
 
     /// Find nearest position where a circle of the given radius is fully clear.
-    /// Searches expanding rings up to 20 tiles from the given world position.
-    /// Returns a world-space position (tile center) or None if nothing found.
     pub fn find_nearest_clear_position(&self, world_pos: Vec2, radius: f32) -> Option<Vec2> {
         let grid_pos = self.world_to_grid(world_pos);
         for ring in 0i32..20 {
