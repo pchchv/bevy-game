@@ -1,6 +1,7 @@
 use super::components::{AIBehavior, Enemy, EnemyCombat};
 use crate::characters::input::Player;
 use crate::combat::systems::{spawn_projectile, ProjectileOwner};
+use crate::audio::SfxKind;
 use bevy::prelude::*;
 
 /// System that handles enemy attacks
@@ -30,6 +31,7 @@ pub fn enemy_attack(
             let visuals = combat.power_type.visuals(to_player);
             // Spawn projectile (reuse existing function!)
             spawn_projectile(&mut commands, spawn_position, combat.power_type, &visuals, ProjectileOwner::Enemy);
+            commands.trigger(SfxKind::EnemyShoot);
             // Reset cooldown for next attack
             combat.cooldown.reset();
             info!("Enemy fired {:?} projectile at player!", combat.power_type);
