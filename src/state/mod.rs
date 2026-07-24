@@ -1,8 +1,8 @@
-mod game_state;
-mod game_over;
+mod pause;
 mod loading;
+mod game_over;
+mod game_state;
 pub mod main_menu;
-pub(crate) mod pause;
 
 use bevy::prelude::*;
 use crate::save::SaveLoadUIState;
@@ -38,8 +38,8 @@ impl Plugin for StatePlugin {
             .add_systems(OnExit(GameState::Loading), loading::despawn_loading_screen)
             // Pause state systems
             .add_systems(OnEnter(GameState::Paused), pause::spawn_pause_menu)
-            .add_systems(OnExit(GameState::Paused), close_save_load_ui)
-            .add_systems(Update, pause::handle_pause_buttons.run_if(in_state(GameState::Paused)),)
+            .add_systems(OnExit(GameState::Paused), (pause::despawn_pause_menu, close_save_load_ui))
+            .add_systems(Update, pause::handle_pause_buttons.run_if(in_state(GameState::Paused)))
             .add_systems(Update, pause::handle_pause_hover.run_if(in_state(GameState::Paused)))
             // Pause toggle (works in Playing or Paused states)
             .add_systems(Update, toggle_pause.run_if(in_state(GameState::Playing).or_else(in_state(GameState::Paused))))
