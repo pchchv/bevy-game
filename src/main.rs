@@ -35,12 +35,13 @@ fn get_assets_path() -> String {
 }
 
 fn main() {
+    let assets_path = get_assets_path();
     App::new()
         .insert_resource(ClearColor(Color::BLACK))
         .add_plugins(
             DefaultPlugins
                 .set(AssetPlugin {
-                    file_path: "src/assets".into(),
+                    file_path: assets_path.into(),
                     ..default()
                 })
                 .set(WindowPlugin {
