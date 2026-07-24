@@ -3,6 +3,7 @@ use super::power_type::{PowerType, PowerVisuals};
 use crate::characters::facing::Facing;
 use crate::characters::input::Player;
 use crate::particles::components::ParticleEmitter;
+use crate::audio::SfxKind;
 use crate::enemy::Enemy;
 use bevy::prelude::*;
 
@@ -58,6 +59,7 @@ pub fn handle_power_input(
     let visuals = combat.power_type.visuals(direction);
     spawn_projectile(&mut commands, spawn_position, combat.power_type, &visuals, ProjectileOwner::Player);
 
+    commands.trigger(SfxKind::PlayerShoot(combat.power_type));
     info!("{:?} projectile fired!", combat.power_type);
 }
 
