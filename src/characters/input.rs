@@ -1,8 +1,9 @@
 use bevy::prelude::*;
+use crate::audio::SfxKind;
 use super::{
-    state::CharacterState,
-    physics::Velocity,
     facing::Facing,
+    physics::Velocity,
+    state::CharacterState,
     config::CharacterEntry,
     animation::{AnimationController, AnimationTimer},
 };
@@ -10,7 +11,6 @@ use super::{
 #[derive(Component)]
 pub struct Player;
 
-/// Read directional input and return a direction vector
 fn read_movement_input(input: &ButtonInput<KeyCode>) -> Vec2 {
     const MOVEMENT_KEYS: [(KeyCode, Vec2); 4] = [
         (KeyCode::ArrowLeft, Vec2::NEG_X),
@@ -43,8 +43,8 @@ fn determine_new_state(current: CharacterState, direction: Vec2, is_running: boo
     }
 }
 
-/// Reads player input and updates movement-related components.
 pub fn handle_player_input(
+    mut commands: Commands,
     input: Res<ButtonInput<KeyCode>>,
     mut query: Query<(
         &mut CharacterState,
@@ -74,6 +74,9 @@ pub fn handle_player_input(
     // This calls the determine_new_state function we wrote earlier
     let new_state = determine_new_state(*state, direction, is_running, wants_jump);
     if *state != new_state {
+        if new_state == CharacterState::Jumping {
+            commands.trigger(SfxKind::Jump);
+        }
         *state = new_state;  // This triggers Changed<CharacterState>!
     }
     
@@ -82,7 +85,6 @@ pub fn handle_player_input(
     *velocity = super::physics::calculate_velocity(*state, direction, character);
 }
 
-/// Checks if jump animation completed and transitions back to idle
 pub fn update_jump_state(
     mut query: Query<(
         &mut CharacterState,
