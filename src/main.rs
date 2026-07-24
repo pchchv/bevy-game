@@ -48,6 +48,7 @@ fn main() {
         .add_plugins(combat::CombatPlugin)
         .add_plugins(enemy::EnemyPlugin)
         .add_plugins(save::SavePlugin)
+        .add_plugins(audio::AudioManagerPlugin)
         .add_systems(Startup, prepare_tilemap_handles_resource)
         .add_systems(OnEnter(GameState::Loading), setup_generator)
         .add_systems(Update, poll_map_generation.run_if(in_state(GameState::Loading)))
